@@ -1,4 +1,4 @@
-[Xtend](http://www.xtend-lang.org) is a versatile, extendable language with a functional flavor, and includes basic concepts for model transformation development. *Xtend2m* adds useful concepts to the Xtend language that enable model transformations with a modular design.
+Xtend2m is an extension of [Xtend](http://www.xtend-lang.org), a versatile, extendable language with a functional flavor that even qualifies for model transformation development. It adds useful concepts to the Xtend language that enable to develop model transformations with a modular design. It is the first module concept for a transformation language with information hiding support.
 
 ## Description
 
