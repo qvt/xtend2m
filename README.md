@@ -1,6 +1,6 @@
 Xtend2m is an extension of [Xtend](http://www.xtend-lang.org), a versatile, extendable language with a functional flavor that even qualifies for model transformation development. It adds useful concepts to the Xtend language that enable to develop model transformations with a modular design. It is the first module concept for a transformation language with information hiding support.
 
-## Description
+### Description
 
 Development and maintenance of model transformations make up a substantial share of the lifecycle costs of software products that rely on model-driven techniques. In particular large and heterogeneous models lead to poorly understandable transformation code due to missing language concepts to master complexity. 
 
@@ -8,7 +8,7 @@ Xtend2m implements a module concept for model transformation languages that allo
 
 Designing model transformations in a modular fashion makes sense.  In a case study, we examined the effort required to carry out two typical maintenance tasks on a real- world transformation written in Xtend. We are able to attest a significant reduction of effort, thereby demonstrating the practical effects of the interface concept on the maintainability of model transformations.
 
-## Features
+### Features
 
 Xtend2m adds the following concepts to Xtend:
 
@@ -18,7 +18,7 @@ Xtend2m adds the following concepts to Xtend:
 
 Xtend2m uses Active Annotations to non-invasively enhance the base language.  
 
-## Installing
+### Installing
 
 Instructions will be added soon.
 
@@ -35,10 +35,10 @@ Instructions will be added soon.
 
 To run a proof on generated Coq files, you need to install the [Coq proof assistant](http://coq.inria.fr/download), version 8.4 or higher. We recommend to download Coq bundled with CoqIDE.-->
 
-## Publication
+### Publication
 * A. Rentschler, D. Werle, Q. Noorshams, L. Happe, R. Reussner. [*Designing Information Hiding Modularity for Model Transformation Languages*](http://could.finally.lead.to/paper.pdf). Proceedings of the 13th International Conference on Modularity (AOSD '14), Lugano, Switzerland, April 2014. ACM, New York, NY, USA. April 2014, Accepted for publication. To appear.
 
-## Contributors
+### Contributors
 * [Dominik Werle](emailto:dominik.werle_atgoeshere_student.kit.edu) from Karlsruhe Institute of Technology
 * [Andreas Rentschler] (http://sdq.ipd.kit.edu/people/andreas_rentschler/) from Karlsruhe Institute of Technology
 
