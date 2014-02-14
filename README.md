@@ -10,13 +10,33 @@ Designing model transformations in a modular fashion brings real benefits.  In a
 
 ### Features
 
-Xtend2m adds the following concepts to Xtend:
+Xtend2m uses Xtend's concept of *Active Annotations* to non-invasively enhance the base language with several concepts:
 
-* Module interfaces;
-* Controlled access to model elements; and
-* A tracing API that enforces access control
+* **@TransformationInterface** and **@TransformationModule** to declare module interfaces;
+* **@ModelIn** and **@ModelOut** to controlled access to model elements per module; and
+* **@Creates** to realize mapping functions including a tracing API, both enforcing access control
 
-Xtend2m uses Active Annotations to non-invasively enhance the base language.  
+An example module interface and an implementation may look like this:
+
+```
+@TransformationInterface
+@ModelIn(#["activitymodel.StartAction",
+           "activityModel.StopAction"])
+@ModelOut(#["processModel.Step"])
+interface IAction2Step {
+	def Step action2Process(Action self)
+}
+@TransformationModule
+class Action2Step implements IAction2Step {
+	@Creates(typeof(Step))
+	override Step action2Process(Action self) {
+	   result.name = self.name
+	   self.succ.lateResolveOne [ result.next = it ]
+	   result.isStart = self instanceof StartAction
+	   result.isStop = self instanceof StopAction
+	}
+}
+```
 
 ### Installing
 
