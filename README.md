@@ -1,4 +1,4 @@
-Xtend2m turns [Xtend](http://www.xtend-lang.org) into a powerful model transformation language that supports modular programming. Xtend is a versatile, extendable language with a functional flavor. With a concise syntax close to the Object Constraint Language, Xtend qualifies for model transformation development. To increase maintainability of larger and more complex transformations, this work adds a customized module concept to the Xtend language. It is the first module concept for a transformation language with information hiding support.
+Xtend2m turns [Xtend](http://www.xtend-lang.org) into a model transformation language that promotes modular programming. Xtend is a versatile, extendable language with a functional flavor. With a concise syntax close to the Object Constraint Language, Xtend qualifies for model transformation development. To increase maintainability of larger and more complex transformations, this work adds a customized module concept to the Xtend language. It is the first model transformation language that features a module concept with information hiding support.
 
 ### Description
 
@@ -13,10 +13,11 @@ Designing model transformations in a modular fashion brings real benefits.  In a
 Xtend2m uses Xtend's concept of *Active Annotations* to non-invasively enhance the base language with several concepts:
 
 * **@TransformationInterface** and **@TransformationModule** to declare module interfaces;
-* **@ModelIn** and **@ModelOut** to controlled access to model elements per module; and
-* **@Creates** to realize mapping functions including a tracing API, both enforcing access control
+* **@ModelIn** and **@ModelOut** to controlled access to model elements per module;
+* **@Creates** to realize mapping functions that enforces access control; and
+* A tracing API (**lateResolveOne**, …) that enforces access control, as well.
 
-An example module interface and an implementation may look like this:
+If a module implementation violates its interface, e.g., if access to a model element id not allowed, errors are indicated in the editor (*static type checking*). The following code snipped gives an impression on how an example module interface and an implementation in Xtend2m is programmed.
 
 ```
 @TransformationInterface
@@ -24,12 +25,12 @@ An example module interface and an implementation may look like this:
            "activityModel.StopAction"])
 @ModelOut(#["processModel.Step"])
 interface IAction2Step {
-	def Step action2Process(Action self)
+	def Step mapAction2Step(Action self)
 }
 @TransformationModule
 class Action2Step implements IAction2Step {
 	@Creates(typeof(Step))
-	override Step action2Process(Action self) {
+	override Step mapAction2Step(Action self) {
 	   result.name = self.name
 	   self.succ.lateResolveOne [ result.next = it ]
 	   result.isStart = self instanceof StartAction
@@ -37,6 +38,7 @@ class Action2Step implements IAction2Step {
 	}
 }
 ```
+The module provides one mapping, *mapAction2Process*, that transforms instances of class *Action* to instances of class *Step*.
 
 ### Installing
 
@@ -54,6 +56,9 @@ Instructions will be added soon.
 <!--You are ready to use the code generator to produce Coq specifications from QVT-R programs, Ecore metamodels and instances thereof. To do so, use the run configuration **Generate Coq Code**. The transformation searches in subfolder [models](http://github.com/qvt/qvtr2coq/tree/master/edu.kit.ipd.sdq.mdsd.qvtrelation2coq/models) for files ending with .qvtr, .ecore, and .xmi. Resulting Coq specifications (.v files) are placed into [src-gen](http://github.com/qvt/qvtr2coq/tree/master/edu.kit.ipd.sdq.mdsd.qvtrelation2coq/src-gen). 
 
 To run a proof on generated Coq files, you need to install the [Coq proof assistant](http://coq.inria.fr/download), version 8.4 or higher. We recommend to download Coq bundled with CoqIDE.-->
+
+### See Also
+[QVTom](http://qvt.github.io/qvtom/), a modular extension of QVTo.
 
 ### Publication
 * A. Rentschler, D. Werle, Q. Noorshams, L. Happe, R. Reussner. [*Designing Information Hiding Modularity for Model Transformation Languages*](http://could.finally.lead.to/paper.pdf). Proceedings of the 13th International Conference on Modularity (AOSD '14), Lugano, Switzerland, April 2014. ACM, New York, NY, USA. April 2014, Accepted for publication. To appear.
