@@ -45,13 +45,35 @@
 <h3>
 <a name="features" class="anchor" href="#features"><span class="octicon octicon-link"></span></a>Features</h3>
 
-<p>Xtend2m adds the following concepts to Xtend:</p>
+<p>Xtend2m uses Xtend's concept of <em>Active Annotations</em> to non-invasively enhance the base language with several concepts:</p>
 
 <ul>
-<li>Module interfaces;</li>
-<li>Controlled access to model elements; and</li>
-<li>A tracing API that enforces access control</li>
-</ul><p>Xtend2m uses Active Annotations to non-invasively enhance the base language.  </p>
+<li>
+<strong>@TransformationInterface</strong> and <strong>@TransformationModule</strong> to declare module interfaces;</li>
+<li>
+<strong>@ModelIn</strong> and <strong>@ModelOut</strong> to controlled access to model elements per module; and</li>
+<li>
+<strong>@Creates</strong> to realize mapping functions including a tracing API, both enforcing access control</li>
+</ul><p>An example module interface and an implementation may look like this:</p>
+
+<pre><code>@TransformationInterface
+@ModelIn(#["activitymodel.StartAction",
+           "activityModel.StopAction"])
+@ModelOut(#["processModel.Step"])
+interface IAction2Step {
+    def Step action2Process(Action self)
+}
+@TransformationModule
+class Action2Step implements IAction2Step {
+    @Creates(typeof(Step))
+    override Step action2Process(Action self) {
+       result.name = self.name
+       self.succ.lateResolveOne [ result.next = it ]
+       result.isStart = self instanceof StartAction
+       result.isStop = self instanceof StopAction
+    }
+}
+</code></pre>
 
 <h3>
 <a name="installing" class="anchor" href="#installing"><span class="octicon octicon-link"></span></a>Installing</h3>
