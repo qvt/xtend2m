@@ -31,7 +31,7 @@
     <!-- MAIN CONTENT -->
     <div id="main_content_wrap" class="outer">
       <section id="main_content" class="inner">
-        <p>Xtend2m turns <a href="http://www.xtend-lang.org">Xtend</a> into a powerful model transformation language that supports modular programming. Xtend is a versatile, extendable language with a functional flavor. With a concise syntax close to the Object Constraint Language, Xtend qualifies for model transformation development. To increase maintainability of larger and more complex transformations, this work adds a customized module concept to the Xtend language. It is the first module concept for a transformation language with information hiding support.</p>
+        <p>Xtend2m turns <a href="http://www.xtend-lang.org">Xtend</a> into a model transformation language that promotes modular programming. Xtend is a versatile, extendable language with a functional flavor. With a concise syntax close to the Object Constraint Language, Xtend qualifies for model transformation development. To increase maintainability of larger and more complex transformations, this work adds a customized module concept to the Xtend language. It is the first model transformation language that features a module concept with information hiding support.</p>
 
 <h3>
 <a name="description" class="anchor" href="#description"><span class="octicon octicon-link"></span></a>Description</h3>
@@ -51,22 +51,23 @@
 <li>
 <strong>@TransformationInterface</strong> and <strong>@TransformationModule</strong> to declare module interfaces;</li>
 <li>
-<strong>@ModelIn</strong> and <strong>@ModelOut</strong> to controlled access to model elements per module; and</li>
+<strong>@ModelIn</strong> and <strong>@ModelOut</strong> to controlled access to model elements per module;</li>
 <li>
-<strong>@Creates</strong> to realize mapping functions including a tracing API, both enforcing access control</li>
-</ul><p>An example module interface and an implementation may look like this:</p>
+<strong>@Creates</strong> to realize mapping functions that enforces access control; and</li>
+<li>A tracing API (<strong>lateResolveOne</strong>, …) that enforces access control, as well.</li>
+</ul><p>If a module implementation violates its interface, e.g., if access to a model element id not allowed, errors are indicated in the editor (<em>static type checking</em>). The following code snipped gives an impression on how an example module interface and an implementation in Xtend2m is programmed.</p>
 
 <pre><code>@TransformationInterface
 @ModelIn(#["activitymodel.StartAction",
            "activityModel.StopAction"])
 @ModelOut(#["processModel.Step"])
 interface IAction2Step {
-    def Step action2Process(Action self)
+    def Step mapAction2Step(Action self)
 }
 @TransformationModule
 class Action2Step implements IAction2Step {
     @Creates(typeof(Step))
-    override Step action2Process(Action self) {
+    override Step mapAction2Step(Action self) {
        result.name = self.name
        self.succ.lateResolveOne [ result.next = it ]
        result.isStart = self instanceof StartAction
@@ -74,6 +75,8 @@ class Action2Step implements IAction2Step {
     }
 }
 </code></pre>
+
+<p>The module provides one mapping, <em>mapAction2Process</em>, that transforms instances of class <em>Action</em> to instances of class <em>Step</em>.</p>
 
 <h3>
 <a name="installing" class="anchor" href="#installing"><span class="octicon octicon-link"></span></a>Installing</h3>
@@ -85,6 +88,11 @@ class Action2Step implements IAction2Step {
 
 
 
+
+<h3>
+<a name="see-also" class="anchor" href="#see-also"><span class="octicon octicon-link"></span></a>See Also</h3>
+
+<p><a href="http://qvt.github.io/qvtom/">QVTom</a>, a modular extension of QVTo.</p>
 
 <h3>
 <a name="publication" class="anchor" href="#publication"><span class="octicon octicon-link"></span></a>Publication</h3>
