@@ -4,7 +4,7 @@ Xtend2m turns [Xtend](http://www.xtend-lang.org) into a model transformation lan
 
 Development and maintenance of model transformations make up a substantial share of the lifecycle costs of software products that rely on model-driven techniques. In particular large and heterogeneous models lead to poorly understandable transformation code due to missing language concepts to master complexity. 
 
-Xtend2m implements a module concept for model transformation languages that allows programmers to control information hiding and strictly declare model and code dependencies at module interfaces. With Xtend2m, we can break down transformation logic into smaller parts, so that each part owns a clear interface for separating concerns. To meet the special demands of transformations, module interfaces give control over both model and code accessibility. 
+Xtend2m embeds a module concept for model transformation languages into the Xtend language version 2 (as opposed to its obsolete version 1). Xtend2m allows programmers to control information hiding and strictly declare model and code dependencies at module interfaces. With Xtend2m, we can break down transformation logic into smaller parts, so that each part owns a clear interface for separating concerns. To meet the special demands of transformations, module interfaces give control over both model and code accessibility.
 
 Designing model transformations in a modular fashion brings real benefits.  In a case study, we examined the effort required to carry out two typical maintenance tasks on a real- world transformation written in Xtend. We are able to attest a significant reduction of effort, thereby demonstrating the practical effects of the interface concept on the maintainability of model transformations.
 
@@ -38,7 +38,7 @@ class Action2Step implements IAction2Step {
 	}
 }
 ```
-The module provides one mapping, *mapAction2Process*, that transforms instances of class *Action* to instances of class *Step*.
+The module provides one mapping, *mapAction2Step*, that transforms instances of class *Action* to instances of class *Step*. Using annotations @ModelIn and @ModelIn, the implementation is not allowed to access any instances other than *StartAction*, *StopAction*, and *Step*.
 
 ### Installing
 
@@ -58,13 +58,14 @@ Instructions will be added soon.
 To run a proof on generated Coq files, you need to install the [Coq proof assistant](http://coq.inria.fr/download), version 8.4 or higher. We recommend to download Coq bundled with CoqIDE.-->
 
 ### See Also
-[QVTom](http://qvt.github.io/qvtom/), a modular extension of QVTo.
+* [Modular Model Transformations](https://sdqweb.ipd.kit.edu/wiki/Modular_Model_Transformations), the overall approach behind this project, as well as information for developers.
+* [QVTom](http://qvt.github.io/qvtom/), a modular extension of QVTo hosted at Github.
 
 ### Publication
 * A. Rentschler, D. Werle, Q. Noorshams, L. Happe, R. Reussner. [*Designing Information Hiding Modularity for Model Transformation Languages*](http://could.finally.lead.to/paper.pdf). Proceedings of the 13th International Conference on Modularity (AOSD '14), Lugano, Switzerland, April 2014. ACM, New York, NY, USA. April 2014, Accepted for publication. To appear.
 
 ### Contributors
-* [Dominik Werle](emailto:dominik.werle_atgoeshere_student.kit.edu) from Karlsruhe Institute of Technology
+* [Dominik Werle](emailto:dominik.werle_AtSignGoesHere_student.kit.edu) from Karlsruhe Institute of Technology
 * [Andreas Rentschler] (http://sdq.ipd.kit.edu/people/andreas_rentschler/) from Karlsruhe Institute of Technology
 
 Work has partly been funded by the German Research Foundation (DFG) under grant No. RE 1674/5-1: [Model-Driven Methods and Tools for Performance Prediction and Capacity Planning of Component-Based Software Systems](http://www.ferdinand-project.org).
