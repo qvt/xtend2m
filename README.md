@@ -62,7 +62,7 @@ To run a proof on generated Coq files, you need to install the [Coq proof assist
 * [QVTom](http://qvt.github.io/qvtom/), a modular extension of QVTo hosted at Github.
 
 ### Publication
-* A. Rentschler, D. Werle, Q. Noorshams, L. Happe, R. Reussner. [*Designing Information Hiding Modularity for Model Transformation Languages*](http://could.finally.lead.to/paper.pdf). Proceedings of the 13th International Conference on Modularity (AOSD '14), Lugano, Switzerland, April 2014. ACM, New York, NY, USA. April 2014, Accepted for publication. To appear.
+* A. Rentschler, D. Werle, Q. Noorshams, L. Happe, R. Reussner. [*Designing Information Hiding Modularity for Model Transformation Languages*](http://dl.acm.org/citation.cfm?doid=2577080.2577094). Proceedings of the 13th International Conference on Modularity (AOSD '14), Lugano, Switzerland, April 2014. ACM, New York, NY, USA. April 2014.
 
 ### Contributors
 * [Dominik Werle](emailto:dominik.werle_AtSignGoesHere_student.kit.edu) from Karlsruhe Institute of Technology
