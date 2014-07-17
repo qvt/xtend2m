@@ -51,7 +51,7 @@
 <li>
 <strong>@TransformationInterface</strong> and <strong>@TransformationModule</strong> to declare module interfaces;</li>
 <li>
-<strong><a href="https://github.com/Import" class="user-mention">@Import</a></strong> to access modules via their interface;</li>
+<strong>@****Import</strong> to access modules via their interface;</li>
 <li>
 <strong>@ScopeIn</strong> and <strong>@ScopeOut</strong> to control access to model elements per module;</li>
 <li>
@@ -59,24 +59,24 @@
 <li>A tracing API (<strong>lateResolveOne</strong>, …) that enforces access control, as well.</li>
 </ul><p>If a module implementation violates its interface, e.g., if access to a model element id not allowed, errors are indicated in the editor (<em>static type checking</em>). The following code snipped gives an impression on how an example module interface and an implementation in Xtend2m is programmed.</p>
 
-<pre><code>@TransformationInterface
-@ScopeIn(#["activitymodel.StartAction",
-           "activityModel.StopAction"])
-@ScopeOut(#["processModel.Step"])
-interface IAction2Step {
-    def Step mapAction2Step(Action self)
-}
-@TransformationModule
-class Action2Step implements IAction2Step {
-    @Creates(typeof(Step))
-    override Step mapAction2Step(Action self) {
-       result.name = self.name
-       self.succ.lateResolveOne [ result.next = it ]
-       result.isStart = self instanceof StartAction
-       result.isStop = self instanceof StopAction
-    }
-}
-</code></pre>
+<div class="highlight highlight-java"><pre><span class="nd">@TransformationInterface</span>
+<span class="nd">@ScopeIn</span><span class="o">(</span><span class="err">#</span><span class="o">[</span><span class="s">"activitymodel.StartAction"</span><span class="o">,</span>
+           <span class="s">"activityModel.StopAction"</span><span class="o">])</span>
+<span class="nd">@ScopeOut</span><span class="o">(</span><span class="err">#</span><span class="o">[</span><span class="s">"processModel.Step"</span><span class="o">])</span>
+<span class="kd">interface</span> <span class="nc">IAction2Step</span> <span class="o">{</span>
+    <span class="n">def</span> <span class="n">Step</span> <span class="nf">mapAction2Step</span><span class="o">(</span><span class="n">Action</span> <span class="n">self</span><span class="o">)</span>
+<span class="o">}</span>
+<span class="nd">@TransformationModule</span>
+<span class="kd">class</span> <span class="nc">Action2Step</span> <span class="kd">implements</span> <span class="n">IAction2Step</span> <span class="o">{</span>
+    <span class="nd">@Creates</span><span class="o">(</span><span class="n">typeof</span><span class="o">(</span><span class="n">Step</span><span class="o">))</span>
+    <span class="n">override</span> <span class="n">Step</span> <span class="nf">mapAction2Step</span><span class="o">(</span><span class="n">Action</span> <span class="n">self</span><span class="o">)</span> <span class="o">{</span>
+       <span class="n">result</span><span class="o">.</span><span class="na">name</span> <span class="o">=</span> <span class="n">self</span><span class="o">.</span><span class="na">name</span>
+       <span class="n">self</span><span class="o">.</span><span class="na">succ</span><span class="o">.</span><span class="na">lateResolveOne</span> <span class="o">[</span> <span class="n">result</span><span class="o">.</span><span class="na">next</span> <span class="o">=</span> <span class="n">it</span> <span class="o">]</span>
+       <span class="n">result</span><span class="o">.</span><span class="na">isStart</span> <span class="o">=</span> <span class="n">self</span> <span class="k">instanceof</span> <span class="n">StartAction</span>
+       <span class="n">result</span><span class="o">.</span><span class="na">isStop</span> <span class="o">=</span> <span class="n">self</span> <span class="k">instanceof</span> <span class="n">StopAction</span>
+    <span class="o">}</span>
+<span class="o">}</span>
+</pre></div>
 
 <p>The module provides one mapping, <em>mapAction2Step</em>, that transforms instances of class <em>Action</em> to instances of class <em>Step</em>. Using annotations @ScopeIn and @ScopeIn, the implementation is not allowed to access any instances other than <em>StartAction</em>, <em>StopAction</em>, and <em>Step</em>.</p>
 
