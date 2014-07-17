@@ -6,7 +6,7 @@ Development and maintenance of model transformations make up a substantial share
 
 Xtend2m embeds a module concept for model transformation languages into the Xtend language version 2 (as opposed to its obsolete version 1). Xtend2m allows programmers to control information hiding and strictly declare model and code dependencies at module interfaces. With Xtend2m, we can break down transformation logic into smaller parts, so that each part owns a clear interface for separating concerns. To meet the special demands of transformations, module interfaces give control over both model and code accessibility.
 
-Designing model transformations in a modular fashion brings real benefits.  In a case study, we examined the effort required to carry out two typical maintenance tasks on a real- world transformation written in Xtend. We are able to attest a significant reduction of effort, thereby demonstrating the practical effects of the interface concept on the maintainability of model transformations.
+Designing model transformations in a modular fashion brings real benefits. In a case study, we examined the effort required to carry out two typical maintenance tasks on a real- world transformation written in Xtend. We are able to attest a significant reduction of effort, thereby demonstrating the practical effects of the interface concept on the maintainability of model transformations.
 
 ### Features
 
