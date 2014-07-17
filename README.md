@@ -22,9 +22,9 @@ If a module implementation violates its interface, e.g., if access to a model el
 
 ```
 @TransformationInterface
-@ModelIn(#["activitymodel.StartAction",
+@ScopeIn(#["activitymodel.StartAction",
            "activityModel.StopAction"])
-@ModelOut(#["processModel.Step"])
+@ScopeOut(#["processModel.Step"])
 interface IAction2Step {
 	def Step mapAction2Step(Action self)
 }
@@ -39,7 +39,7 @@ class Action2Step implements IAction2Step {
 	}
 }
 ```
-The module provides one mapping, *mapAction2Step*, that transforms instances of class *Action* to instances of class *Step*. Using annotations @ModelIn and @ModelIn, the implementation is not allowed to access any instances other than *StartAction*, *StopAction*, and *Step*.
+The module provides one mapping, *mapAction2Step*, that transforms instances of class *Action* to instances of class *Step*. Using annotations @ScopeIn and @ScopeIn, the implementation is not allowed to access any instances other than *StartAction*, *StopAction*, and *Step*.
 
 ### Installing
 
