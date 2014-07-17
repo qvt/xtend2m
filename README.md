@@ -23,7 +23,7 @@ If a module implementation violates its interface, e.g., if access to a model el
 ```xtend
 @TransformationInterface
 @ScopeIn(#["activitymodel.StartAction",
-	   "activityModel.StopAction"])
+		"activityModel.StopAction"])
 @ScopeOut(#["processModel.Step"])
 interface IAction2Step {
 	def Step mapAction2Step(Action self)
