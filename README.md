@@ -13,7 +13,7 @@ Designing model transformations in a modular fashion brings real benefits.  In a
 Xtend2m uses Xtend's concept of *Active Annotations* to non-invasively enhance the base language with several concepts:
 
 * **@TransformationInterface** and **@TransformationModule** to declare module interfaces;
-* **@<>Import** to access modules via their interface;
+* **@[]()Import** to access modules via their interface;
 * **@ScopeIn** and **@ScopeOut** to control access to model elements per module;
 * **@Creates** to realize mapping functions that enforces access control; and
 * A tracing API (**lateResolveOne**, …) that enforces access control, as well.
