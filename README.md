@@ -20,10 +20,10 @@ Xtend2m uses Xtend's concept of *Active Annotations* to non-invasively enhance t
 
 If a module implementation violates its interface, e.g., if access to a model element id not allowed, errors are indicated in the editor (*static type checking*). The following code snipped gives an impression on how an example module interface and an implementation in Xtend2m is programmed.
 
-```xtend
+```java
 @TransformationInterface
 @ScopeIn(#["activitymodel.StartAction",
-           "activityModel.StopAction"])
+	   "activityModel.StopAction"])
 @ScopeOut(#["processModel.Step"])
 interface IAction2Step {
 	def Step mapAction2Step(Action self)
@@ -32,10 +32,10 @@ interface IAction2Step {
 class Action2Step implements IAction2Step {
 	@Creates(typeof(Step))
 	override Step mapAction2Step(Action self) {
-	   result.name = self.name
-	   self.succ.lateResolveOne [ result.next = it ]
-	   result.isStart = self instanceof StartAction
-	   result.isStop = self instanceof StopAction
+		result.name = self.name
+		self.succ.lateResolveOne [ result.next = it ]
+		result.isStart = self instanceof StartAction
+		result.isStop = self instanceof StopAction
 	}
 }
 ```
