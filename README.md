@@ -20,7 +20,7 @@ Xtend2m uses Xtend's concept of *Active Annotations* to non-invasively enhance t
 
 If a module implementation violates its interface, e.g., if access to a model element id not allowed, errors are indicated in the editor (*static type checking*). The following code snipped gives an impression on how an example module interface and an implementation in Xtend2m is programmed.
 
-```
+```java
 @TransformationInterface
 @ScopeIn(#["activitymodel.StartAction",
            "activityModel.StopAction"])
