@@ -48,7 +48,7 @@ The following steps describe a particular version of Eclipse, older/newer versio
 1. Install a [Java SE](http://www.oracle.com/technetwork/java/javase/downloads/index.html) runtime environment version 1.8.0_05-b13 (Newer and older versions, like Java 7, reportedly worked, as well);
 2. Download [Eclipse 4.4.0 Luna Modeling Edition (Build 20140612-0600)](http://www.eclipse.org/downloads/packages/eclipse-modeling-tools/lunar) and launch it;
 3. Install through menu **Help > Install Modeling Components...** [Eclipse Xtext 2.6.1 (Xtend SDK 2.6.1.v201405210727)](http://www.eclipse.org/modeling/tmf/downloads/?project=xtext) of the Model Development Tools (MDT) project;
-4. Choose **Help > Check for Updates...** to update to the latest Xtext 2.7.0 (Xtend SDK 2.7.0.v201407030400, later versions may require adaptations of our plugins);
+4. Choose **Help > Check for Updates...** to update to the latest Xtext. At the time of writing, it is required to add the [Xtext Composite Update Site (Nightly)](http://download.itemis.com/updates/nightly) to the list of available update sites to obtain version 2.7.0 (Xtend SDK 2.7.0.v201407030400, earlier or later versions may require adaptations of our plugins);
 5. Download [Xtend2m](https://github.com/qvt/xtend2m/zipball/master) and import contained projects through **File > Import > Existing Projects into Workspace…** into your Eclipse workspace;
 6. Import project org.eclipse.xtend.core from origin/master (no tag exists for 2.7.0 yet as of Jul 14, 2014) of repository git://git.eclipse.org/gitroot/tmf/org.eclipse.xtext.git and apply patch for model scope checking (see project org.eclipse.xtend.core-patch for instructions).
 
