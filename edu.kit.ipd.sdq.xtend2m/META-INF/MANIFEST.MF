@@ -3,15 +3,15 @@ Bundle-ManifestVersion: 2
 Bundle-Name: Xtend2m
 Bundle-SymbolicName: edu.kit.ipd.sdq.xtend2m
 Bundle-Version: 1.0.0.qualifier
-Export-Package: edu.kit.ipd.sdq.xtend2m.api;uses:="org.eclipse.emf.ecore,org.eclipse.xtext.xbase.lib",
+Export-Package: edu.kit.ipd.sdq.xtend2m.annotations,
+ edu.kit.ipd.sdq.xtend2m.api;uses:="org.eclipse.emf.ecore,org.eclipse.xtext.xbase.lib",
  edu.kit.ipd.sdq.xtend2m.api.exceptions,
  edu.kit.ipd.sdq.xtend2m.mwe;
-  uses:="org.eclipse.emf.mwe.core.issues,
-   org.eclipse.emf.ecore,
+  uses:="org.eclipse.emf.ecore,
+   org.eclipse.emf.mwe.core.lib,
+   org.eclipse.emf.mwe.core.issues,
    org.eclipse.emf.mwe.core,
-   org.eclipse.emf.mwe.core.monitor,
-   org.eclipse.emf.mwe.core.lib",
- edu.kit.ipd.sdq.xtend2m.annotations
+   org.eclipse.emf.mwe.core.monitor"
 Require-Bundle: org.eclipse.xtext.xbase;bundle-version="2.4.2",
  org.eclipse.emf.common;bundle-version="2.9.0",
  org.eclipse.emf.ecore,
@@ -29,4 +29,3 @@ Import-Package: org.apache.commons.logging;version="1.0.4",
  org.eclipse.emf.ecore.xmi.util,
  org.eclipse.emf.mwe.core,
  org.eclipse.emf.mwe.utils
-Bundle-ClassPath: xtend2m.jar
