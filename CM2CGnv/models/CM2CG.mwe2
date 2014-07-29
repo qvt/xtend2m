@@ -1,0 +1,52 @@
+module CM2CG
+
+Workflow {
+	// setup for the transformation
+	bean = org.eclipse.emf.mwe.utils.StandaloneSetup {
+		scanClassPath = true
+
+		registerGeneratedEPackage = "cg.CgPackage"
+		registerGeneratedEPackage = "cm.repository.RepositoryPackage"
+		registerGeneratedEPackage = "cm.seff.SeffPackage"
+		registerGeneratedEPackage = "cm.composition.CompositionPackage"
+	}
+
+	// load XMI files
+	component = org.eclipse.emf.mwe.utils.Reader {
+		useSingleGlobalResourceSet = true
+		
+		firstElementOnly = false
+		
+		makeEPackagesGlobal = true
+		uri = "mediastore.system.xmi"
+		modelSlot = "inputSystem"
+	}
+
+	// invoke the transformation
+component = edu.kit.ipd.sdq.xtend2m.mwe.ModuleLoader {
+	input  = "inputSystem"
+	
+	output = {
+		package = "cg"
+	    slot    = "transformedModel" }
+	
+	config = {
+		key   = "providedRoleToCall"
+		value = "Provided_IHTTP_DefaultMediaStoreSystem" }
+	
+	config = {
+		key   = "providedOperationToCall"
+	    value = "HTTPUpload" }
+
+
+	transformationModule = "trafo.impl.CM2CGRepositoryImpl"
+	transformationModule = "trafo.impl.CM2CGSEFFImpl"
+	transformationModule = "trafo.impl.CMLibraryImpl"
+}
+
+	// store XMI file
+	component = org.eclipse.emf.mwe.utils.Writer {
+		modelSlot = "transformedModel"
+		uri = "cg.xmi"
+	}
+}

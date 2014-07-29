@@ -1,0 +1,61 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?eclipse version="3.0"?>
+
+<!--
+-->
+
+<plugin>
+
+   <extension point="org.eclipse.emf.ecore.generated_package">
+      <!-- @generated cg -->
+      <package
+            uri="http://sdq.ipd.uka.de/CallGraph"
+            class="cg.CgPackage"
+            genModel="metamodels/cg.genmodel"/>
+   </extension>
+
+   <extension point="org.eclipse.emf.ecore.generated_package">
+      <!-- @generated cm -->
+      <package
+            uri="http://sdq.ipd.uka.de/ComponentModel/Repository"
+            class="cm.repository.RepositoryPackage"
+            genModel="metamodels/cm.genmodel"/>
+   </extension>
+
+   <extension point="org.eclipse.emf.ecore.extension_parser">
+      <!-- @generated cm -->
+      <parser
+            type="repository"
+            class="cm.repository.util.RepositoryResourceFactoryImpl"/>
+   </extension>
+
+   <extension point="org.eclipse.emf.ecore.generated_package">
+      <!-- @generated cm -->
+      <package
+            uri="http://sdq.ipd.uka.de/ComponentModel/Composition"
+            class="cm.composition.CompositionPackage"
+            genModel="metamodels/cm.genmodel"/>
+   </extension>
+
+   <extension point="org.eclipse.emf.ecore.extension_parser">
+      <!-- @generated cm -->
+      <parser
+            type="composition"
+            class="cm.composition.util.CompositionResourceFactoryImpl"/>
+   </extension>
+
+   <extension point="org.eclipse.emf.ecore.generated_package">
+      <!-- @generated cm -->
+      <package
+            uri="http://sdq.ipd.uka.de/ComponentModel/SEFF"
+            class="cm.seff.SeffPackage"
+            genModel="metamodels/cm.genmodel"/>
+   </extension>
+
+   <extension point="org.eclipse.emf.ecore.extension_parser">
+      <!-- @generated cm -->
+      <parser
+            type="seff"
+            class="cm.seff.util.SeffResourceFactoryImpl"/>
+   </extension>
+</plugin>

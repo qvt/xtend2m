@@ -1,0 +1,244 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<genmodel:GenModel xmi:version="2.0" xmlns:xmi="http://www.omg.org/XMI" xmlns:ecore="http://www.eclipse.org/emf/2002/Ecore"
+    xmlns:genmodel="http://www.eclipse.org/emf/2002/GenModel" modelDirectory="/CM2CGnw/src" modelPluginID="CM2CGnw" modelName="Cm"
+    rootExtendsClass="org.eclipse.emf.ecore.impl.MinimalEObjectImpl$Container" importerID="org.eclipse.emf.importer.ecore"
+    complianceLevel="7.0" copyrightFields="false" operationReflection="true" importOrganizing="true">
+  <foreignModel>cm.ecore</foreignModel>
+  <genPackages prefix="Cm" disposableProviderFactory="true" ecorePackage="cm.ecore#/">
+    <nestedGenPackages prefix="Repository" resource="XML" disposableProviderFactory="true"
+        ecorePackage="cm.ecore#//repository">
+      <genEnums typeSafeEnumCompatible="false" ecoreEnum="cm.ecore#//repository/PrimitiveType">
+        <genEnumLiterals ecoreEnumLiteral="cm.ecore#//repository/PrimitiveType/INT"/>
+        <genEnumLiterals ecoreEnumLiteral="cm.ecore#//repository/PrimitiveType/STRING"/>
+        <genEnumLiterals ecoreEnumLiteral="cm.ecore#//repository/PrimitiveType/BOOL"/>
+        <genEnumLiterals ecoreEnumLiteral="cm.ecore#//repository/PrimitiveType/DOUBLE"/>
+        <genEnumLiterals ecoreEnumLiteral="cm.ecore#//repository/PrimitiveType/CHAR"/>
+        <genEnumLiterals ecoreEnumLiteral="cm.ecore#//repository/PrimitiveType/BYTE"/>
+        <genEnumLiterals ecoreEnumLiteral="cm.ecore#//repository/PrimitiveType/LONG"/>
+      </genEnums>
+      <genClasses ecoreClass="cm.ecore#//repository/BasicComponent">
+        <genFeatures property="None" children="true" createChild="true" ecoreFeature="ecore:EReference cm.ecore#//repository/BasicComponent/serviceEffectSpecifications"/>
+      </genClasses>
+      <genClasses image="false" ecoreClass="cm.ecore#//repository/ComponentTypeImplementation">
+        <genFeatures notify="false" createChild="false" propertySortChoices="true"
+            ecoreFeature="ecore:EReference cm.ecore#//repository/ComponentTypeImplementation/implementedComponentTypes"/>
+      </genClasses>
+      <genClasses image="false" ecoreClass="cm.ecore#//repository/RepositoryComponent">
+        <genFeatures property="None" notify="false" createChild="false" ecoreFeature="ecore:EReference cm.ecore#//repository/RepositoryComponent/repository"/>
+      </genClasses>
+      <genClasses ecoreClass="cm.ecore#//repository/ComponentType"/>
+      <genClasses ecoreClass="cm.ecore#//repository/ProvidedRole">
+        <genFeatures property="None" notify="false" createChild="false" ecoreFeature="ecore:EReference cm.ecore#//repository/ProvidedRole/providingEntity"/>
+        <genFeatures notify="false" createChild="false" propertySortChoices="true"
+            ecoreFeature="ecore:EReference cm.ecore#//repository/ProvidedRole/providedInterface"/>
+      </genClasses>
+      <genClasses ecoreClass="cm.ecore#//repository/Parameter">
+        <genFeatures notify="false" createChild="false" propertySortChoices="true"
+            ecoreFeature="ecore:EReference cm.ecore#//repository/Parameter/dataType"/>
+        <genFeatures property="None" notify="false" createChild="false" ecoreFeature="ecore:EReference cm.ecore#//repository/Parameter/signature"/>
+        <genFeatures createChild="false" ecoreFeature="ecore:EAttribute cm.ecore#//repository/Parameter/name"/>
+      </genClasses>
+      <genClasses image="false" ecoreClass="cm.ecore#//repository/DataType">
+        <genFeatures property="None" notify="false" createChild="false" ecoreFeature="ecore:EReference cm.ecore#//repository/DataType/repository"/>
+      </genClasses>
+      <genClasses image="false" ecoreClass="cm.ecore#//repository/Role"/>
+      <genClasses ecoreClass="cm.ecore#//repository/Repository">
+        <genFeatures createChild="false" ecoreFeature="ecore:EAttribute cm.ecore#//repository/Repository/description"/>
+        <genFeatures property="None" children="true" createChild="true" ecoreFeature="ecore:EReference cm.ecore#//repository/Repository/components"/>
+        <genFeatures property="None" children="true" createChild="true" ecoreFeature="ecore:EReference cm.ecore#//repository/Repository/interfaces"/>
+        <genFeatures property="None" children="true" createChild="true" ecoreFeature="ecore:EReference cm.ecore#//repository/Repository/dataTypes"/>
+      </genClasses>
+      <genClasses ecoreClass="cm.ecore#//repository/Interface">
+        <genFeatures notify="false" createChild="false" propertySortChoices="true"
+            ecoreFeature="ecore:EReference cm.ecore#//repository/Interface/parentInterfaces"/>
+        <genFeatures property="None" notify="false" createChild="false" ecoreFeature="ecore:EReference cm.ecore#//repository/Interface/repository"/>
+        <genFeatures property="None" children="true" createChild="true" ecoreFeature="ecore:EReference cm.ecore#//repository/Interface/signatures"/>
+      </genClasses>
+      <genClasses ecoreClass="cm.ecore#//repository/Signature">
+        <genFeatures property="None" children="true" createChild="true" ecoreFeature="ecore:EReference cm.ecore#//repository/Signature/exceptions"/>
+        <genFeatures property="None" children="true" createChild="true" ecoreFeature="ecore:EReference cm.ecore#//repository/Signature/parameters"/>
+        <genFeatures notify="false" createChild="false" propertySortChoices="true"
+            ecoreFeature="ecore:EReference cm.ecore#//repository/Signature/returnType"/>
+        <genFeatures property="None" notify="false" createChild="false" ecoreFeature="ecore:EReference cm.ecore#//repository/Signature/interface"/>
+      </genClasses>
+      <genClasses ecoreClass="cm.ecore#//repository/ExceptionType">
+        <genFeatures createChild="false" ecoreFeature="ecore:EAttribute cm.ecore#//repository/ExceptionType/name"/>
+        <genFeatures createChild="false" ecoreFeature="ecore:EAttribute cm.ecore#//repository/ExceptionType/message"/>
+      </genClasses>
+      <genClasses ecoreClass="cm.ecore#//repository/RequiredRole">
+        <genFeatures property="None" notify="false" createChild="false" ecoreFeature="ecore:EReference cm.ecore#//repository/RequiredRole/requiringEntity"/>
+        <genFeatures notify="false" createChild="false" propertySortChoices="true"
+            ecoreFeature="ecore:EReference cm.ecore#//repository/RequiredRole/requiredInterface"/>
+      </genClasses>
+      <genClasses ecoreClass="cm.ecore#//repository/CompositeComponent">
+        <genOperations ecoreOperation="cm.ecore#//repository/CompositeComponent/ProvideSameInterfaces">
+          <genParameters ecoreParameter="cm.ecore#//repository/CompositeComponent/ProvideSameInterfaces/diagnostics"/>
+          <genParameters ecoreParameter="cm.ecore#//repository/CompositeComponent/ProvideSameInterfaces/context"/>
+        </genOperations>
+        <genOperations ecoreOperation="cm.ecore#//repository/CompositeComponent/RequireSameInterfaces">
+          <genParameters ecoreParameter="cm.ecore#//repository/CompositeComponent/RequireSameInterfaces/diagnostics"/>
+          <genParameters ecoreParameter="cm.ecore#//repository/CompositeComponent/RequireSameInterfaces/context"/>
+        </genOperations>
+      </genClasses>
+      <genClasses ecoreClass="cm.ecore#//repository/PrimitiveDataType">
+        <genFeatures createChild="false" ecoreFeature="ecore:EAttribute cm.ecore#//repository/PrimitiveDataType/type"/>
+      </genClasses>
+      <genClasses ecoreClass="cm.ecore#//repository/CollectionDataType">
+        <genFeatures notify="false" createChild="false" propertySortChoices="true"
+            ecoreFeature="ecore:EReference cm.ecore#//repository/CollectionDataType/innerType"/>
+      </genClasses>
+      <genClasses ecoreClass="cm.ecore#//repository/CompositeDataType">
+        <genFeatures notify="false" createChild="false" propertySortChoices="true"
+            ecoreFeature="ecore:EReference cm.ecore#//repository/CompositeDataType/parentType"/>
+        <genFeatures property="None" children="true" createChild="true" ecoreFeature="ecore:EReference cm.ecore#//repository/CompositeDataType/innerDeclaration"/>
+      </genClasses>
+      <genClasses ecoreClass="cm.ecore#//repository/InnerDeclaration">
+        <genFeatures notify="false" createChild="false" propertySortChoices="true"
+            ecoreFeature="ecore:EReference cm.ecore#//repository/InnerDeclaration/dataType"/>
+        <genFeatures property="None" notify="false" createChild="false" ecoreFeature="ecore:EReference cm.ecore#//repository/InnerDeclaration/compositeDataType"/>
+      </genClasses>
+    </nestedGenPackages>
+    <nestedGenPackages prefix="Composition" resource="XML" disposableProviderFactory="true"
+        ecorePackage="cm.ecore#//composition">
+      <genClasses image="false" ecoreClass="cm.ecore#//composition/DelegationConnector"/>
+      <genClasses image="false" ecoreClass="cm.ecore#//composition/Connector">
+        <genFeatures property="None" notify="false" createChild="false" ecoreFeature="ecore:EReference cm.ecore#//composition/Connector/parentStructure"/>
+      </genClasses>
+      <genClasses image="false" ecoreClass="cm.ecore#//composition/ComposedStructure">
+        <genFeatures property="None" children="true" createChild="true" ecoreFeature="ecore:EReference cm.ecore#//composition/ComposedStructure/assemblyContexts"/>
+        <genFeatures property="None" children="true" createChild="true" ecoreFeature="ecore:EReference cm.ecore#//composition/ComposedStructure/connectors"/>
+        <genOperations ecoreOperation="cm.ecore#//composition/ComposedStructure/MultipleConnectorsConstraint">
+          <genParameters ecoreParameter="cm.ecore#//composition/ComposedStructure/MultipleConnectorsConstraint/diagnostics"/>
+          <genParameters ecoreParameter="cm.ecore#//composition/ComposedStructure/MultipleConnectorsConstraint/context"/>
+        </genOperations>
+        <genOperations ecoreOperation="cm.ecore#//composition/ComposedStructure/MultipleConnectorsConstraintForAssemblyConnectors">
+          <genParameters ecoreParameter="cm.ecore#//composition/ComposedStructure/MultipleConnectorsConstraintForAssemblyConnectors/diagnostics"/>
+          <genParameters ecoreParameter="cm.ecore#//composition/ComposedStructure/MultipleConnectorsConstraintForAssemblyConnectors/context"/>
+        </genOperations>
+      </genClasses>
+      <genClasses ecoreClass="cm.ecore#//composition/ProvidedDelegationConnector">
+        <genFeatures notify="false" createChild="false" propertySortChoices="true"
+            ecoreFeature="ecore:EReference cm.ecore#//composition/ProvidedDelegationConnector/innerProvidedRole"/>
+        <genFeatures notify="false" createChild="false" propertySortChoices="true"
+            ecoreFeature="ecore:EReference cm.ecore#//composition/ProvidedDelegationConnector/outerProvidedRole"/>
+        <genFeatures notify="false" createChild="false" propertySortChoices="true"
+            ecoreFeature="ecore:EReference cm.ecore#//composition/ProvidedDelegationConnector/assemblyContext"/>
+        <genOperations ecoreOperation="cm.ecore#//composition/ProvidedDelegationConnector/ComponentOfAssemblyContextAndInnerRoleProvidingComponentNeedToBeTheSame">
+          <genParameters ecoreParameter="cm.ecore#//composition/ProvidedDelegationConnector/ComponentOfAssemblyContextAndInnerRoleProvidingComponentNeedToBeTheSame/diagnostics"/>
+          <genParameters ecoreParameter="cm.ecore#//composition/ProvidedDelegationConnector/ComponentOfAssemblyContextAndInnerRoleProvidingComponentNeedToBeTheSame/context"/>
+        </genOperations>
+        <genOperations ecoreOperation="cm.ecore#//composition/ProvidedDelegationConnector/ProvidedDelegationConnectorandtheconnectedComponentmustbepartofthesamecompositestructure">
+          <genParameters ecoreParameter="cm.ecore#//composition/ProvidedDelegationConnector/ProvidedDelegationConnectorandtheconnectedComponentmustbepartofthesamecompositestructure/diagnostics"/>
+          <genParameters ecoreParameter="cm.ecore#//composition/ProvidedDelegationConnector/ProvidedDelegationConnectorandtheconnectedComponentmustbepartofthesamecompositestructure/context"/>
+        </genOperations>
+      </genClasses>
+      <genClasses ecoreClass="cm.ecore#//composition/RequiredDelegationConnector">
+        <genFeatures notify="false" createChild="false" propertySortChoices="true"
+            ecoreFeature="ecore:EReference cm.ecore#//composition/RequiredDelegationConnector/innerRequiredRole"/>
+        <genFeatures notify="false" createChild="false" propertySortChoices="true"
+            ecoreFeature="ecore:EReference cm.ecore#//composition/RequiredDelegationConnector/outerRequiredRole"/>
+        <genFeatures notify="false" createChild="false" propertySortChoices="true"
+            ecoreFeature="ecore:EReference cm.ecore#//composition/RequiredDelegationConnector/assemblyContext"/>
+      </genClasses>
+      <genClasses ecoreClass="cm.ecore#//composition/AssemblyConnector">
+        <genFeatures notify="false" createChild="false" propertySortChoices="true"
+            ecoreFeature="ecore:EReference cm.ecore#//composition/AssemblyConnector/requiringAssemblyContext"/>
+        <genFeatures notify="false" createChild="false" propertySortChoices="true"
+            ecoreFeature="ecore:EReference cm.ecore#//composition/AssemblyConnector/providingAssemblyContext"/>
+        <genFeatures notify="false" createChild="false" propertySortChoices="true"
+            ecoreFeature="ecore:EReference cm.ecore#//composition/AssemblyConnector/providedRole"/>
+        <genFeatures notify="false" createChild="false" propertySortChoices="true"
+            ecoreFeature="ecore:EReference cm.ecore#//composition/AssemblyConnector/requiredRole"/>
+        <genOperations ecoreOperation="cm.ecore#//composition/AssemblyConnector/AssemblyConnectorsReferencedProvidedRolesAndChildContextMustMatch">
+          <genParameters ecoreParameter="cm.ecore#//composition/AssemblyConnector/AssemblyConnectorsReferencedProvidedRolesAndChildContextMustMatch/diagnostics"/>
+          <genParameters ecoreParameter="cm.ecore#//composition/AssemblyConnector/AssemblyConnectorsReferencedProvidedRolesAndChildContextMustMatch/context"/>
+        </genOperations>
+        <genOperations ecoreOperation="cm.ecore#//composition/AssemblyConnector/AssemblyConnectorsReferencedInterfacesMustMatch">
+          <genParameters ecoreParameter="cm.ecore#//composition/AssemblyConnector/AssemblyConnectorsReferencedInterfacesMustMatch/diagnostics"/>
+          <genParameters ecoreParameter="cm.ecore#//composition/AssemblyConnector/AssemblyConnectorsReferencedInterfacesMustMatch/context"/>
+        </genOperations>
+        <genOperations ecoreOperation="cm.ecore#//composition/AssemblyConnector/AssemblyConnectorsReferencedRequiredRoleAndChildContextMustMatch">
+          <genParameters ecoreParameter="cm.ecore#//composition/AssemblyConnector/AssemblyConnectorsReferencedRequiredRoleAndChildContextMustMatch/diagnostics"/>
+          <genParameters ecoreParameter="cm.ecore#//composition/AssemblyConnector/AssemblyConnectorsReferencedRequiredRoleAndChildContextMustMatch/context"/>
+        </genOperations>
+      </genClasses>
+      <genClasses ecoreClass="cm.ecore#//composition/AssemblyContext">
+        <genFeatures property="None" notify="false" createChild="false" ecoreFeature="ecore:EReference cm.ecore#//composition/AssemblyContext/parentStructure"/>
+        <genFeatures notify="false" createChild="false" propertySortChoices="true"
+            ecoreFeature="ecore:EReference cm.ecore#//composition/AssemblyContext/encapsulatedComponent"/>
+      </genClasses>
+      <genClasses ecoreClass="cm.ecore#//composition/System">
+        <genOperations ecoreOperation="cm.ecore#//composition/System/SystemMustHaveAtLeastOneProvidedRole">
+          <genParameters ecoreParameter="cm.ecore#//composition/System/SystemMustHaveAtLeastOneProvidedRole/diagnostics"/>
+          <genParameters ecoreParameter="cm.ecore#//composition/System/SystemMustHaveAtLeastOneProvidedRole/context"/>
+        </genOperations>
+      </genClasses>
+      <genClasses ecoreClass="cm.ecore#//composition/SubSystem"/>
+      <genClasses image="false" ecoreClass="cm.ecore#//composition/InterfaceProvidingRequiringEntity"/>
+      <genClasses image="false" ecoreClass="cm.ecore#//composition/InterfaceProvidingEntity">
+        <genFeatures property="None" children="true" createChild="true" ecoreFeature="ecore:EReference cm.ecore#//composition/InterfaceProvidingEntity/providedRoles"/>
+      </genClasses>
+      <genClasses image="false" ecoreClass="cm.ecore#//composition/InterfaceRequiringEntity">
+        <genFeatures property="None" children="true" createChild="true" ecoreFeature="ecore:EReference cm.ecore#//composition/InterfaceRequiringEntity/requiredRoles"/>
+      </genClasses>
+      <genClasses image="false" ecoreClass="cm.ecore#//composition/ComposedProvidingRequiringEntity"/>
+      <genClasses image="false" ecoreClass="cm.ecore#//composition/NamedElement">
+        <genFeatures createChild="false" ecoreFeature="ecore:EAttribute cm.ecore#//composition/NamedElement/entityName"/>
+      </genClasses>
+      <genClasses image="false" ecoreClass="cm.ecore#//composition/Entity"/>
+      <genClasses image="false" ecoreClass="cm.ecore#//composition/Identifier">
+        <genFeatures createChild="false" ecoreFeature="ecore:EAttribute cm.ecore#//composition/Identifier/id"/>
+        <genOperations ecoreOperation="cm.ecore#//composition/Identifier/idHasToBeUnique">
+          <genParameters ecoreParameter="cm.ecore#//composition/Identifier/idHasToBeUnique/diagnostics"/>
+          <genParameters ecoreParameter="cm.ecore#//composition/Identifier/idHasToBeUnique/context"/>
+        </genOperations>
+      </genClasses>
+    </nestedGenPackages>
+    <nestedGenPackages prefix="Seff" resource="XML" disposableProviderFactory="true"
+        ecorePackage="cm.ecore#//seff">
+      <genClasses image="false" ecoreClass="cm.ecore#//seff/ServiceEffectSpecification">
+        <genFeatures notify="false" createChild="false" propertySortChoices="true"
+            ecoreFeature="ecore:EReference cm.ecore#//seff/ServiceEffectSpecification/describedService"/>
+        <genFeatures property="None" notify="false" createChild="false" ecoreFeature="ecore:EReference cm.ecore#//seff/ServiceEffectSpecification/basicComponent"/>
+        <genFeatures property="None" children="true" createChild="true" ecoreFeature="ecore:EReference cm.ecore#//seff/ServiceEffectSpecification/internalBehaviours"/>
+      </genClasses>
+      <genClasses ecoreClass="cm.ecore#//seff/InternalBehaviour">
+        <genFeatures property="None" notify="false" createChild="false" ecoreFeature="ecore:EReference cm.ecore#//seff/InternalBehaviour/serviceEffectSpecifications"/>
+        <genFeatures notify="false" createChild="false" propertySortChoices="true"
+            ecoreFeature="ecore:EReference cm.ecore#//seff/InternalBehaviour/branchTransition"/>
+        <genFeatures property="None" children="true" createChild="true" ecoreFeature="ecore:EReference cm.ecore#//seff/InternalBehaviour/steps"/>
+      </genClasses>
+      <genClasses image="false" ecoreClass="cm.ecore#//seff/AbstractAction">
+        <genFeatures notify="false" createChild="false" propertySortChoices="true"
+            ecoreFeature="ecore:EReference cm.ecore#//seff/AbstractAction/predecessor"/>
+        <genFeatures notify="false" createChild="false" propertySortChoices="true"
+            ecoreFeature="ecore:EReference cm.ecore#//seff/AbstractAction/successor"/>
+        <genFeatures property="None" notify="false" createChild="false" ecoreFeature="ecore:EReference cm.ecore#//seff/AbstractAction/internalBehaviour"/>
+        <genFeatures property="None" notify="false" createChild="false" ecoreFeature="ecore:EReference cm.ecore#//seff/AbstractAction/specification"/>
+      </genClasses>
+      <genClasses ecoreClass="cm.ecore#//seff/StartAction"/>
+      <genClasses ecoreClass="cm.ecore#//seff/StopAction"/>
+      <genClasses ecoreClass="cm.ecore#//seff/ExternalCallAction">
+        <genFeatures notify="false" createChild="false" propertySortChoices="true"
+            ecoreFeature="ecore:EReference cm.ecore#//seff/ExternalCallAction/calledService"/>
+        <genFeatures notify="false" createChild="false" propertySortChoices="true"
+            ecoreFeature="ecore:EReference cm.ecore#//seff/ExternalCallAction/role"/>
+      </genClasses>
+      <genClasses ecoreClass="cm.ecore#//seff/BranchAction">
+        <genFeatures property="None" children="true" createChild="true" ecoreFeature="ecore:EReference cm.ecore#//seff/BranchAction/branchTransitions"/>
+      </genClasses>
+      <genClasses ecoreClass="cm.ecore#//seff/ProbabilisticBranchTransition">
+        <genFeatures property="None" notify="false" createChild="false" ecoreFeature="ecore:EReference cm.ecore#//seff/ProbabilisticBranchTransition/branchAction"/>
+        <genFeatures createChild="false" ecoreFeature="ecore:EAttribute cm.ecore#//seff/ProbabilisticBranchTransition/branchProbability"/>
+      </genClasses>
+      <genClasses ecoreClass="cm.ecore#//seff/SimpleBehaviorSpecification">
+        <genFeatures notify="false" createChild="false" propertySortChoices="true"
+            ecoreFeature="ecore:EReference cm.ecore#//seff/SimpleBehaviorSpecification/transition"/>
+      </genClasses>
+      <genClasses ecoreClass="cm.ecore#//seff/InternalAction"/>
+      <genClasses image="false" ecoreClass="cm.ecore#//seff/Automaton">
+        <genFeatures property="None" children="true" createChild="true" ecoreFeature="ecore:EReference cm.ecore#//seff/Automaton/steps"/>
+      </genClasses>
+    </nestedGenPackages>
+  </genPackages>
+</genmodel:GenModel>

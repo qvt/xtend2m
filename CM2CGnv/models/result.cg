@@ -1,0 +1,71 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xmi:XMI xmi:version="2.0" xmlns:xmi="http://www.omg.org/XMI" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:cg="http://sdq.ipd.uka.de/CallGraph" xsi:schemaLocation="http://sdq.ipd.uka.de/CallGraph ../metamodels/cg.ecore">
+  <cg:Graph name="DefaultMediaStoreSystem: Provided_IHTTP_DefaultMediaStoreSystem: HTTPDownload">
+    <transitions sources="/0/@actions.1" targets="/0/@actions.0"/>
+    <transitions sources="/0/@actions.0" targets="/0/@actions.2"/>
+    <actions xsi:type="cg:ComposedAction" name="Call WebGUI" sources="/0/@transitions.0" targets="/0/@transitions.1" net="/1"/>
+    <actions xsi:type="cg:InputAction" name="Start" targets="/0/@transitions.0"/>
+    <actions xsi:type="cg:OutputAction" name="Stop" sources="/0/@transitions.1"/>
+  </cg:Graph>
+  <cg:Graph name="WebGUI: Provided_IHTTP_WebGUI: HTTPDownload">
+    <transitions name="download -> &lt;unnamed>" sources="/1/@actions.0" targets="/1/@actions.4"/>
+    <transitions name="createResponse -> download" sources="/1/@actions.1" targets="/1/@actions.0"/>
+    <transitions name="&lt;unnamed> -> parseRequest" sources="/1/@actions.2" targets="/1/@actions.3"/>
+    <transitions name="parseRequest -> createResponse" sources="/1/@actions.3" targets="/1/@actions.1"/>
+    <actions xsi:type="cg:ComposedAction" name="download" sources="/1/@transitions.1" targets="/1/@transitions.0" net="/2"/>
+    <actions xsi:type="cg:Action" name="createResponse" sources="/1/@transitions.3" targets="/1/@transitions.1"/>
+    <actions xsi:type="cg:InputAction" name="&lt;unnamed>" targets="/1/@transitions.2"/>
+    <actions xsi:type="cg:Action" name="parseRequest" sources="/1/@transitions.2" targets="/1/@transitions.3"/>
+    <actions xsi:type="cg:OutputAction" name="&lt;unnamed>" sources="/1/@transitions.0"/>
+  </cg:Graph>
+  <cg:Graph name="MediaStore: Provided_IMediaStore_MediaStore: download">
+    <transitions name="&lt;unnamed> -> queryDB" sources="/2/@actions.1" targets="/2/@actions.2"/>
+    <transitions name="queryDB -> watermark" sources="/2/@actions.2" targets="/2/@actions.0"/>
+    <transitions name="watermark -> &lt;unnamed>" sources="/2/@actions.0" targets="/2/@actions.3"/>
+    <actions xsi:type="cg:ComposedAction" name="watermark" sources="/2/@transitions.1" targets="/2/@transitions.2" net="/7"/>
+    <actions xsi:type="cg:InputAction" name="&lt;unnamed>" targets="/2/@transitions.0"/>
+    <actions xsi:type="cg:ComposedAction" name="queryDB" sources="/2/@transitions.0" targets="/2/@transitions.1" net="/3"/>
+    <actions xsi:type="cg:OutputAction" name="&lt;unnamed>" sources="/2/@transitions.2"/>
+  </cg:Graph>
+  <cg:Graph name="DBCache: Provided_IAudioDB_DBCache: queryDB">
+    <transitions name="fileIsNotInCache -> &lt;unnamed>" sources="/3/@actions.0" targets="/3/@actions.2"/>
+    <transitions name="Branch -> fileIsNotInCache" sources="/3/@actions.3" targets="/3/@actions.0" probability="0.8"/>
+    <transitions name="fileIsInCache -> &lt;unnamed>" sources="/3/@actions.1" targets="/3/@actions.2"/>
+    <transitions name="Branch -> fileIsInCache" sources="/3/@actions.3" targets="/3/@actions.1" probability="0.2"/>
+    <transitions name="&lt;unnamed> -> checkIfInCache" sources="/3/@actions.4" targets="/3/@actions.5"/>
+    <transitions name="Branch -> &lt;unnamed>" sources="/3/@actions.3" targets="/3/@actions.2"/>
+    <transitions name="checkIfInCache -> Branch" sources="/3/@actions.5" targets="/3/@actions.3"/>
+    <actions xsi:type="cg:ComposedAction" name="fileIsNotInCache" sources="/3/@transitions.1" targets="/3/@transitions.0" net="/4"/>
+    <actions xsi:type="cg:ComposedAction" name="fileIsInCache" sources="/3/@transitions.3" targets="/3/@transitions.2" net="/6"/>
+    <actions xsi:type="cg:OutputAction" name="&lt;unnamed>" sources="/3/@transitions.5 /3/@transitions.0 /3/@transitions.2"/>
+    <actions xsi:type="cg:Action" name="Branch" sources="/3/@transitions.6" targets="/3/@transitions.1 /3/@transitions.3 /3/@transitions.5"/>
+    <actions xsi:type="cg:InputAction" name="&lt;unnamed>" targets="/3/@transitions.4"/>
+    <actions xsi:type="cg:Action" name="checkIfInCache" sources="/3/@transitions.4" targets="/3/@transitions.6"/>
+  </cg:Graph>
+  <cg:Graph name="fileIsNotInCache">
+    <transitions name="&lt;unnamed> -> queryDB" sources="/4/@actions.0" targets="/4/@actions.1"/>
+    <transitions name="queryDB -> &lt;unnamed>" sources="/4/@actions.1" targets="/4/@actions.2"/>
+    <actions xsi:type="cg:InputAction" name="&lt;unnamed>" targets="/4/@transitions.0"/>
+    <actions xsi:type="cg:ComposedAction" name="queryDB" sources="/4/@transitions.0" targets="/4/@transitions.1" net="/5"/>
+    <actions xsi:type="cg:OutputAction" name="&lt;unnamed>" sources="/4/@transitions.1"/>
+  </cg:Graph>
+  <cg:Graph name="AudioDB: Provided_IAudioDB_AudioDB: queryDB">
+    <transitions name="&lt;unnamed> -> loadFiles" sources="/5/@actions.2" targets="/5/@actions.0"/>
+    <transitions name="loadFiles -> &lt;unnamed>" sources="/5/@actions.0" targets="/5/@actions.1"/>
+    <actions xsi:type="cg:Action" name="loadFiles" sources="/5/@transitions.0" targets="/5/@transitions.1"/>
+    <actions xsi:type="cg:OutputAction" name="&lt;unnamed>" sources="/5/@transitions.1"/>
+    <actions xsi:type="cg:InputAction" name="&lt;unnamed>" targets="/5/@transitions.0"/>
+  </cg:Graph>
+  <cg:Graph name="fileIsInCache">
+    <transitions name="&lt;unnamed> -> &lt;unnamed>" sources="/6/@actions.0" targets="/6/@actions.1"/>
+    <actions xsi:type="cg:InputAction" name="&lt;unnamed>" targets="/6/@transitions.0"/>
+    <actions xsi:type="cg:OutputAction" name="&lt;unnamed>" sources="/6/@transitions.0"/>
+  </cg:Graph>
+  <cg:Graph name="DigitalWatermarking: Provided_ISound_DigitalWatermarking: watermark">
+    <transitions name="watermarkFile -> &lt;unnamed>" sources="/7/@actions.1" targets="/7/@actions.0"/>
+    <transitions name="&lt;unnamed> -> watermarkFile" sources="/7/@actions.2" targets="/7/@actions.1"/>
+    <actions xsi:type="cg:OutputAction" name="&lt;unnamed>" sources="/7/@transitions.0"/>
+    <actions xsi:type="cg:Action" name="watermarkFile" sources="/7/@transitions.1" targets="/7/@transitions.0"/>
+    <actions xsi:type="cg:InputAction" name="&lt;unnamed>" targets="/7/@transitions.1"/>
+  </cg:Graph>
+</xmi:XMI>
