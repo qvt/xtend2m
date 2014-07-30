@@ -1,0 +1,97 @@
+<?xml version="1.0" encoding="ASCII"?>
+<composition:System
+    xmi:version="2.0"
+    xmlns:xmi="http://www.omg.org/XMI"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xmlns:composition="http://sdq.ipd.uka.de/ComponentModel/Composition"
+    xmlns:repository="http://sdq.ipd.uka.de/ComponentModel/Repository"
+    xsi:schemaLocation="http://sdq.ipd.uka.de/ComponentModel/Composition ../metamodels/cm.ecore#//composition http://sdq.ipd.uka.de/ComponentModel/Repository ../metamodels/cm.ecore#//repository"
+    entityName="DefaultMediaStoreSystem">
+  <assemblyContexts
+      entityName="Assembly_WebGUI">
+    <encapsulatedComponent
+        xsi:type="repository:BasicComponent"
+        href="mediastore.repository.xmi#//@components.0"/>
+  </assemblyContexts>
+  <assemblyContexts
+      entityName="Assembly_MediaStore">
+    <encapsulatedComponent
+        xsi:type="repository:BasicComponent"
+        href="mediastore.repository.xmi#//@components.1"/>
+  </assemblyContexts>
+  <assemblyContexts
+      entityName="Assembly_AudioDB">
+    <encapsulatedComponent
+        xsi:type="repository:BasicComponent"
+        href="mediastore.repository.xmi#//@components.2"/>
+  </assemblyContexts>
+  <assemblyContexts
+      entityName="Assembly_DigitalWatermarking">
+    <encapsulatedComponent
+        xsi:type="repository:BasicComponent"
+        href="mediastore.repository.xmi#//@components.3"/>
+  </assemblyContexts>
+  <assemblyContexts
+      entityName="Assembly_DBCache">
+    <encapsulatedComponent
+        xsi:type="repository:BasicComponent"
+        href="mediastore.repository.xmi#//@components.5"/>
+  </assemblyContexts>
+  <connectors
+      xsi:type="composition:AssemblyConnector"
+      entityName="Connector Assembly_WebGUI &lt;IMediaStore> -> Assembly_MediaStore &lt;IMediaStore>"
+      requiringAssemblyContext="//@assemblyContexts.0"
+      providingAssemblyContext="//@assemblyContexts.1">
+    <providedRole
+        href="mediastore.repository.xmi#//@components.1/@providedRoles.0"/>
+    <requiredRole
+        href="mediastore.repository.xmi#//@components.0/@requiredRoles.0"/>
+  </connectors>
+  <connectors
+      xsi:type="composition:AssemblyConnector"
+      entityName="Connector Assembly_MediaStore &lt;IAudioDB> -> Assembly_CacheDB &lt;IAudioDB>"
+      requiringAssemblyContext="//@assemblyContexts.1"
+      providingAssemblyContext="//@assemblyContexts.4">
+    <providedRole
+        href="mediastore.repository.xmi#//@components.5/@providedRoles.0"/>
+    <requiredRole
+        href="mediastore.repository.xmi#//@components.1/@requiredRoles.0"/>
+  </connectors>
+  <connectors
+      xsi:type="composition:AssemblyConnector"
+      entityName="Connector Assembly_CacheDB &lt;IAudioDB> -> Assembly_AudioDB &lt;IAudioDB>"
+      id=""
+      requiringAssemblyContext="//@assemblyContexts.4"
+      providingAssemblyContext="//@assemblyContexts.2">
+    <providedRole
+        href="mediastore.repository.xmi#//@components.2/@providedRoles.0"/>
+    <requiredRole
+        href="mediastore.repository.xmi#//@components.5/@requiredRoles.0"/>
+  </connectors>
+  <connectors
+      xsi:type="composition:AssemblyConnector"
+      entityName="Connector Assembly_MediaStore &lt;MediaStore> -> Assembly_DigitalWatermarking &lt;DigitalWatermarking>"
+      requiringAssemblyContext="//@assemblyContexts.1"
+      providingAssemblyContext="//@assemblyContexts.3">
+    <providedRole
+        href="mediastore.repository.xmi#//@components.3/@providedRoles.0"/>
+    <requiredRole
+        href="mediastore.repository.xmi#//@components.1/@requiredRoles.1"/>
+  </connectors>
+  <connectors
+      xsi:type="composition:ProvidedDelegationConnector"
+      entityName="Provided Delegation Connector Provided_IHTTP -> Provided_IHTTP_WebGUI"
+      id=""
+      outerProvidedRole="//@providedRoles.0"
+      assemblyContext="//@assemblyContexts.0">
+    <innerProvidedRole
+        href="mediastore.repository.xmi#//@components.0/@providedRoles.0"/>
+  </connectors>
+  <providedRoles
+      xsi:type="repository:ProvidedRole"
+      entityName="Provided_IHTTP_DefaultMediaStoreSystem"
+      id="">
+    <providedInterface
+        href="mediastore.repository.xmi#//@interfaces.4"/>
+  </providedRoles>
+</composition:System>

@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="ASCII"?>
+<xmi:XMI xmi:version="2.0" xmlns:xmi="http://www.omg.org/XMI" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:cg="http://sdq.ipd.uka.de/CallGraph" xsi:schemaLocation="http://sdq.ipd.uka.de/CallGraph java://cg.CgPackage">
+  <cg:Graph name="AudioDB: Provided_IAudioDB_AudioDB: addFile">
+    <transitions name="&lt;unnamed> -> writeFilename" sources="/0/@actions.0" targets="/0/@actions.1"/>
+    <transitions name="writeFilename -> writeFile2HD" sources="/0/@actions.1" targets="/0/@actions.2"/>
+    <transitions name="writeFile2HD -> &lt;unnamed>" sources="/0/@actions.2" targets="/0/@actions.3"/>
+    <actions xsi:type="cg:InputAction" name="&lt;unnamed>" targets="/0/@transitions.0"/>
+    <actions xsi:type="cg:Action" name="writeFilename" sources="/0/@transitions.0" targets="/0/@transitions.1"/>
+    <actions xsi:type="cg:Action" name="writeFile2HD" sources="/0/@transitions.1" targets="/0/@transitions.2"/>
+    <actions xsi:type="cg:OutputAction" name="&lt;unnamed>" sources="/0/@transitions.2"/>
+  </cg:Graph>
+  <cg:Graph name="MediaStore: Provided_IMediaStore_MediaStore: upload">
+    <transitions name="&lt;unnamed> -> addFile" sources="/1/@actions.0" targets="/1/@actions.1"/>
+    <transitions name="addFile -> &lt;unnamed>" sources="/1/@actions.1" targets="/1/@actions.2"/>
+    <actions xsi:type="cg:InputAction" name="&lt;unnamed>" targets="/1/@transitions.0"/>
+    <actions xsi:type="cg:ComposedAction" name="addFile" sources="/1/@transitions.0" targets="/1/@transitions.1" net="/4"/>
+    <actions xsi:type="cg:OutputAction" name="&lt;unnamed>" sources="/1/@transitions.1"/>
+  </cg:Graph>
+  <cg:Graph name="DefaultMediaStoreSystem: Provided_IHTTP_DefaultMediaStoreSystem: HTTPUpload">
+    <transitions sources="/2/@actions.0" targets="/2/@actions.1"/>
+    <transitions sources="/2/@actions.1" targets="/2/@actions.2"/>
+    <actions xsi:type="cg:InputAction" name="Start" targets="/2/@transitions.0"/>
+    <actions xsi:type="cg:ComposedAction" name="Call WebGUI" sources="/2/@transitions.0" targets="/2/@transitions.1" net="/3"/>
+    <actions xsi:type="cg:OutputAction" name="Stop" sources="/2/@transitions.1"/>
+  </cg:Graph>
+  <cg:Graph name="WebGUI: Provided_IHTTP_WebGUI: HTTPUpload">
+    <transitions name="&lt;unnamed> -> parseRequest" sources="/3/@actions.0" targets="/3/@actions.1"/>
+    <transitions name="parseRequest -> createResponse" sources="/3/@actions.1" targets="/3/@actions.2"/>
+    <transitions name="createResponse -> upload" sources="/3/@actions.2" targets="/3/@actions.3"/>
+    <transitions name="upload -> &lt;unnamed>" sources="/3/@actions.3" targets="/3/@actions.4"/>
+    <actions xsi:type="cg:InputAction" name="&lt;unnamed>" targets="/3/@transitions.0"/>
+    <actions xsi:type="cg:Action" name="parseRequest" sources="/3/@transitions.0" targets="/3/@transitions.1"/>
+    <actions xsi:type="cg:Action" name="createResponse" sources="/3/@transitions.1" targets="/3/@transitions.2"/>
+    <actions xsi:type="cg:ComposedAction" name="upload" sources="/3/@transitions.2" targets="/3/@transitions.3" net="/1"/>
+    <actions xsi:type="cg:OutputAction" name="&lt;unnamed>" sources="/3/@transitions.3"/>
+  </cg:Graph>
+  <cg:Graph name="DBCache: Provided_IAudioDB_DBCache: addFile">
+    <transitions name="&lt;unnamed> -> addFile" sources="/4/@actions.0" targets="/4/@actions.1"/>
+    <transitions name="addFile -> &lt;unnamed>" sources="/4/@actions.1" targets="/4/@actions.2"/>
+    <actions xsi:type="cg:InputAction" name="&lt;unnamed>" targets="/4/@transitions.0"/>
+    <actions xsi:type="cg:ComposedAction" name="addFile" sources="/4/@transitions.0" targets="/4/@transitions.1" net="/0"/>
+    <actions xsi:type="cg:OutputAction" name="&lt;unnamed>" sources="/4/@transitions.1"/>
+  </cg:Graph>
+</xmi:XMI>
