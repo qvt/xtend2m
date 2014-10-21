@@ -116,7 +116,7 @@ class TransformationHandlerProcessor implements TransformationParticipant<Mutabl
 			}
 			
 			if (trafoInterfaceParent == null)
-				clazz.addError("Transformation module " + clazz.simpleName + " does not implement transformation interface")
+				clazz.addWarning("Transformation module " + clazz.simpleName + " does not implement transformation interface")
 
 			// the name of the module that is saved for traces
 			val traceModule =
