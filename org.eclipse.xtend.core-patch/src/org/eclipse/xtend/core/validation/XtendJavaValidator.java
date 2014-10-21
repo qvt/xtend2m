@@ -45,6 +45,7 @@ import org.eclipse.xtend.core.xtend.XtendAnnotationType;
 import org.eclipse.xtend.core.xtend.XtendClass;
 import org.eclipse.xtend.core.xtend.XtendConstructor;
 import org.eclipse.xtend.core.xtend.XtendEnum;
+import org.eclipse.xtend.core.xtend.XtendExecutable;
 import org.eclipse.xtend.core.xtend.XtendField;
 import org.eclipse.xtend.core.xtend.XtendFile;
 import org.eclipse.xtend.core.xtend.XtendFormalParameter;
@@ -74,6 +75,7 @@ import org.eclipse.xtext.common.types.JvmTypeReference;
 import org.eclipse.xtext.common.types.JvmVisibility;
 import org.eclipse.xtext.common.types.JvmWildcardTypeReference;
 import org.eclipse.xtext.common.types.TypesPackage;
+import org.eclipse.xtext.common.types.util.AnnotationLookup;
 import org.eclipse.xtext.common.types.util.TypeReferences;
 import org.eclipse.xtext.diagnostics.Severity;
 import org.eclipse.xtext.documentation.IEObjectDocumentationProvider;
@@ -101,15 +103,15 @@ import org.eclipse.xtext.xbase.XbasePackage.Literals;
 import org.eclipse.xtext.xbase.annotations.typing.XAnnotationUtil;
 import org.eclipse.xtext.xbase.annotations.validation.XbaseWithAnnotationsJavaValidator;
 import org.eclipse.xtext.xbase.annotations.xAnnotations.XAnnotation;
+import org.eclipse.xtext.xbase.annotations.xAnnotations.XAnnotationsPackage;
 import org.eclipse.xtext.xbase.compiler.JavaKeywords;
 import org.eclipse.xtext.xbase.jvmmodel.ILogicalContainerProvider;
 import org.eclipse.xtext.xbase.jvmmodel.JvmTypeExtensions;
-import org.eclipse.xtext.xbase.lib.ReassignFirstArgument;
+import org.eclipse.xtext.xbase.lib.util.ToStringBuilder;
 import org.eclipse.xtext.xbase.scoping.batch.IFeatureNames;
 import org.eclipse.xtext.xbase.scoping.featurecalls.OperatorMapping;
 import org.eclipse.xtext.xbase.typesystem.IBatchTypeResolver;
 import org.eclipse.xtext.xbase.typesystem.IResolvedTypes;
-import org.eclipse.xtext.xbase.typesystem.legacy.StandardTypeReferenceOwner;
 import org.eclipse.xtext.xbase.typesystem.override.IOverrideCheckResult.OverrideCheckDetails;
 import org.eclipse.xtext.xbase.typesystem.override.IResolvedConstructor;
 import org.eclipse.xtext.xbase.typesystem.override.IResolvedExecutable;
@@ -118,7 +120,7 @@ import org.eclipse.xtext.xbase.typesystem.override.OverrideHelper;
 import org.eclipse.xtext.xbase.typesystem.override.ResolvedOperations;
 import org.eclipse.xtext.xbase.typesystem.references.ITypeReferenceOwner;
 import org.eclipse.xtext.xbase.typesystem.references.LightweightTypeReference;
-import org.eclipse.xtext.xbase.typesystem.references.OwnedConverter;
+import org.eclipse.xtext.xbase.typesystem.references.StandardTypeReferenceOwner;
 import org.eclipse.xtext.xbase.typesystem.util.ContextualVisibilityHelper;
 import org.eclipse.xtext.xbase.typesystem.util.IVisibilityHelper;
 import org.eclipse.xtext.xbase.validation.ImplicitReturnFinder;
@@ -130,11 +132,14 @@ import org.eclipse.xtext.xtype.XComputedTypeReference;
 import com.google.common.base.Function;
 import com.google.common.base.Predicate;
 import com.google.common.collect.HashMultimap;
+import com.google.common.collect.ImmutableList;
+import com.google.common.collect.ImmutableListMultimap;
 import com.google.common.collect.ImmutableMultimap;
 import com.google.common.collect.ImmutableSet;
 import com.google.common.collect.Iterables;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Multimap;
+import com.google.common.collect.Multimaps;
 import com.google.common.collect.Sets;
 import com.google.inject.Inject;
 
@@ -204,6 +209,9 @@ public class XtendJavaValidator extends XbaseWithAnnotationsJavaValidator {
 	@Inject
 	private ProxyAwareUIStrings proxyAwareUIStrings;
 	
+	@Inject
+	private AnnotationLookup annotationLookup;
+	
 	protected final Set<String> visibilityModifers = ImmutableSet.of("public", "private", "protected", "package");
 	protected final Multimap<Class<?>, ElementType> targetInfos;
 	
@@ -227,10 +235,9 @@ public class XtendJavaValidator extends XbaseWithAnnotationsJavaValidator {
 	}
 
 	/* NEW */
-	ModelValidationHelper mvHelper = new ModelValidationHelper();
-	
 	@Check
 	public void checkClassModelInterfaceAdherance(XtendClass clazz) {
+		ModelValidationHelper mvHelper = new ModelValidationHelper(associations);
 		mvHelper.initialize();
 		mvHelper.checkClassModelInterfaceAdherance(clazz);
 		
@@ -370,6 +377,45 @@ public class XtendJavaValidator extends XbaseWithAnnotationsJavaValidator {
 			}
 		}
 	}
+	
+	@Check
+	public void checkMultipleAnnotations(final XtendAnnotationTarget annotationTarget) {
+		if (annotationTarget.getAnnotations().size() <= 1 || !isRelevantAnnotationTarget(annotationTarget)) {
+			return;
+		}
+		
+		ImmutableListMultimap<String, XAnnotation> groupByIdentifier = Multimaps.index(annotationTarget.getAnnotations(),
+				new Function<XAnnotation, String>() {
+					public String apply(XAnnotation input) {
+						return input.getAnnotationType().getIdentifier();
+					}
+				});
+
+		for (String qName : groupByIdentifier.keySet()) {
+			ImmutableList<XAnnotation> sameType = groupByIdentifier.get(qName);
+			if (sameType.size() > 1) {
+				JvmType type = sameType.get(0).getAnnotationType();
+				if (type instanceof JvmAnnotationType && !type.eIsProxy()
+						&& !annotationLookup.isRepeatable((JvmAnnotationType) type)) {
+					for (XAnnotation xAnnotation : sameType) {
+						error("Multiple annotations of non-repeatable type @"
+								+ xAnnotation.getAnnotationType().getSimpleName()
+								+ ". Only annotation types marked @Repeatable can be used multiple times at one target.",
+								xAnnotation, XAnnotationsPackage.Literals.XANNOTATION__ANNOTATION_TYPE, INSIGNIFICANT_INDEX, ANNOTATION_MULTIPLE);
+					}
+				}
+			}
+		}
+	}
+
+
+	private boolean isRelevantAnnotationTarget(final XtendAnnotationTarget annotationTarget) {
+		return any(targetInfos.keySet(), new Predicate<Class<?>>() {
+			public boolean apply(Class<?> input) {
+				return input.isInstance(annotationTarget);
+			}
+		});
+	}
 
 	protected EObject getContainingAnnotationTarget(XAnnotation annotation) {
 		final EObject eContainer = annotation.eContainer();
@@ -505,8 +551,8 @@ public class XtendJavaValidator extends XbaseWithAnnotationsJavaValidator {
 		if (listType == null || listType.getTypeParameters().isEmpty()) {
 			error("Couldn't find a JDK 1.5 or higher on the project's classpath.", xtendFile, XTEND_FILE__PACKAGE,
 					IssueCodes.JDK_NOT_ON_CLASSPATH);
-		} else if (typeReferences.findDeclaredType(ReassignFirstArgument.class, xtendFile) == null) {
-			error("Couldn't find the mandatory library 'org.eclipse.xtext.xbase.lib' 2.6.0 or higher on the project's classpath.",
+		} else if (typeReferences.findDeclaredType(ToStringBuilder.class, xtendFile) == null) {
+			error("Couldn't find the mandatory library 'org.eclipse.xtext.xbase.lib' 2.7.0 or higher on the project's classpath.",
 					xtendFile, XTEND_FILE__PACKAGE, IssueCodes.XBASE_LIB_NOT_ON_CLASSPATH);
 		}
 	}
@@ -587,8 +633,8 @@ public class XtendJavaValidator extends XbaseWithAnnotationsJavaValidator {
 	@Check
 	public void checkSuperTypes(AnonymousClass anonymousClass) {
 		JvmGenericType inferredType = associations.getInferredType(anonymousClass);
-		if (inferredType != null && !inferredType.getSuperTypes().isEmpty()) {
-			JvmTypeReference superTypeRef = inferredType.getSuperTypes().get(0);
+		if (inferredType != null) {
+			JvmTypeReference superTypeRef = Iterables.getLast(inferredType.getSuperTypes());
 			JvmType superType = superTypeRef.getType();
 			if(superType instanceof JvmGenericType && ((JvmGenericType) superType).isFinal())
 				error("Attempt to override final class", anonymousClass.getConstructorCall(), XCONSTRUCTOR_CALL__CONSTRUCTOR, INSIGNIFICANT_INDEX, OVERRIDDEN_FINAL);
@@ -734,6 +780,19 @@ public class XtendJavaValidator extends XbaseWithAnnotationsJavaValidator {
 			return null;
 	}
 	
+	protected EStructuralFeature exceptionsFeature(EObject member) {
+		if (member instanceof XtendExecutable) 
+			return XTEND_EXECUTABLE__EXCEPTIONS;
+		else
+			return null;
+	}
+	
+	protected EStructuralFeature returnTypeFeature(EObject member) {
+		if (member instanceof XtendFunction) 
+			return XTEND_FUNCTION__RETURN_TYPE;
+		else
+			return null;
+	}
 	
 	protected void doCheckOverriddenMethods(XtendTypeDeclaration xtendType, JvmGenericType inferredType,
 			ResolvedOperations resolvedOperations, Set<EObject> flaggedOperations) {
@@ -753,7 +812,7 @@ public class XtendJavaValidator extends XbaseWithAnnotationsJavaValidator {
 							resolvedOperations.getDeclaredOperations(operation.getResolvedErasureSignature());
 					for(IResolvedOperation localOperation: declaredOperationsWithSameErasure) {
 						if (!localOperation.isOverridingOrImplementing(operation.getDeclaration()).isOverridingOrImplementing()) {
-							XtendFunction source = findXtendFunction(localOperation);
+							EObject source = findPrimarySourceElement(localOperation);
 							if (flaggedOperations.add(source)) {
 								error("Name clash: The method "
 										+ localOperation.getSimpleSignature() + " of type "
@@ -764,7 +823,7 @@ public class XtendJavaValidator extends XbaseWithAnnotationsJavaValidator {
 										// due to name transformations in JVM model inference
 										operation.getSimpleSignature() + " of type "
 										+ getDeclaratorName(operation.getDeclaration()) + " but does not override it.",
-										source, XTEND_FUNCTION__NAME, DUPLICATE_METHOD);
+										source, nameFeature(source), DUPLICATE_METHOD);
 							}
 						}
 					}
@@ -780,7 +839,7 @@ public class XtendJavaValidator extends XbaseWithAnnotationsJavaValidator {
 		StringBuilder errorMsg = new StringBuilder();
 		String name = xtendClass.getName();
 		if (xtendClass.isAnonymous()) {
-			JvmTypeReference superType = inferredType.getSuperTypes().get(0);
+			JvmTypeReference superType = Iterables.getLast(inferredType.getSuperTypes());
 			errorMsg.append("The anonymous subclass of ").append(superType.getSimpleName());
 			errorMsg.append(" does not implement ");
 		} else {
@@ -819,21 +878,24 @@ public class XtendJavaValidator extends XbaseWithAnnotationsJavaValidator {
 	}
 
 	protected void doCheckFunctionOverrides(IResolvedOperation operation, Set<EObject> flaggedOperations) {
-		XtendFunction function = findXtendFunction(operation);
-		if (function != null && flaggedOperations.add(function)) {
+		EObject sourceElement = findPrimarySourceElement(operation);
+		if (sourceElement != null) {
 			List<IResolvedOperation> allInherited = operation.getOverriddenAndImplementedMethods();
 			if (allInherited.isEmpty()) {
-				if (function.isOverride()) {
-					error("The method "+ operation.getSimpleSignature() +" of type "+getDeclaratorName(operation.getDeclaration())+" must override a superclass method.", 
-							function, XTEND_MEMBER__MODIFIERS, function.getModifiers().indexOf("override"), OBSOLETE_OVERRIDE);
+				if (sourceElement instanceof XtendFunction && flaggedOperations.add(sourceElement)) {
+					XtendFunction function = (XtendFunction) sourceElement;
+					if (function.isOverride()) {
+						error("The method "+ operation.getSimpleSignature() +" of type "+getDeclaratorName(operation.getDeclaration())+" must override a superclass method.", 
+								function, XTEND_MEMBER__MODIFIERS, function.getModifiers().indexOf("override"), OBSOLETE_OVERRIDE);
+					}
 				}
-			} else {
-				doCheckFunctionOverrides(function, operation, allInherited);
+			} else if (flaggedOperations.add(sourceElement)) {
+				doCheckFunctionOverrides(sourceElement, operation, allInherited);
 			}
 		}
 	}
 
-	protected void doCheckFunctionOverrides(XtendFunction function, IResolvedOperation resolved,
+	protected void doCheckFunctionOverrides(EObject sourceElement, IResolvedOperation resolved,
 			List<IResolvedOperation> allInherited) {
 		boolean overrideProblems = false;
 		List<IResolvedOperation> exceptionMismatch = null;
@@ -842,34 +904,37 @@ public class XtendJavaValidator extends XbaseWithAnnotationsJavaValidator {
 				overrideProblems = true;
 				EnumSet<OverrideCheckDetails> details = inherited.getOverrideCheckResult().getDetails();
 				if (details.contains(OverrideCheckDetails.IS_FINAL)) {
-					error("Attempt to override final method " + inherited.getSimpleSignature(), function,
-							XTEND_FUNCTION__NAME, OVERRIDDEN_FINAL);
+					error("Attempt to override final method " + inherited.getSimpleSignature(), sourceElement,
+							nameFeature(sourceElement), OVERRIDDEN_FINAL);
 				} else if (details.contains(OverrideCheckDetails.REDUCED_VISIBILITY)) {
 					error("Cannot reduce the visibility of the overridden method " + inherited.getSimpleSignature(),
-							function, XTEND_FUNCTION__NAME, OVERRIDE_REDUCES_VISIBILITY);
+							sourceElement, nameFeature(sourceElement), OVERRIDE_REDUCES_VISIBILITY);
 				} else if (details.contains(OverrideCheckDetails.EXCEPTION_MISMATCH)) {
 					if (exceptionMismatch == null)
 						exceptionMismatch = Lists.newArrayListWithCapacity(allInherited.size());
 					exceptionMismatch.add(inherited);
 				} else if (details.contains(OverrideCheckDetails.RETURN_MISMATCH)) {
-					error("The return type is incompatible with " + inherited.getSimpleSignature(), function,
-							XTEND_FUNCTION__RETURN_TYPE, INCOMPATIBLE_RETURN_TYPE);
+					error("The return type is incompatible with " + inherited.getSimpleSignature(), sourceElement,
+							returnTypeFeature(sourceElement), INCOMPATIBLE_RETURN_TYPE);
 				}
 			}
 		}
 		if (exceptionMismatch != null) {
-			createExceptionMismatchError(resolved, function, exceptionMismatch);
+			createExceptionMismatchError(resolved, sourceElement, exceptionMismatch);
 		}
-		if (!overrideProblems && !function.isOverride() && !function.isStatic()) {
-			error("The method " + resolved.getSimpleSignature() + " of type " + getDeclaratorName(resolved) +
-					" must use override keyword since it actually overrides a supertype method.", function,
-					XTEND_FUNCTION__NAME, MISSING_OVERRIDE);
-		} 
-		if (!overrideProblems && function.isOverride() && function.isStatic()) {
-			for(IResolvedOperation inherited: allInherited) {
-				error("The method " + resolved.getSimpleSignature() + " of type " + getDeclaratorName(resolved) + 
-					" shadows the method " + resolved.getSimpleSignature() + " of type " + getDeclaratorName(inherited) + 
-					", but does not override it.", function, XTEND_FUNCTION__NAME, function.getModifiers().indexOf("override"), OBSOLETE_OVERRIDE);
+		if (sourceElement instanceof XtendFunction) {
+			XtendFunction function = (XtendFunction) sourceElement;
+			if (!overrideProblems && !function.isOverride() && !function.isStatic()) {
+				error("The method " + resolved.getSimpleSignature() + " of type " + getDeclaratorName(resolved) +
+						" must use override keyword since it actually overrides a supertype method.", function,
+						XTEND_FUNCTION__NAME, MISSING_OVERRIDE);
+			} 
+			if (!overrideProblems && function.isOverride() && function.isStatic()) {
+				for(IResolvedOperation inherited: allInherited) {
+					error("The method " + resolved.getSimpleSignature() + " of type " + getDeclaratorName(resolved) + 
+							" shadows the method " + resolved.getSimpleSignature() + " of type " + getDeclaratorName(inherited) + 
+							", but does not override it.", function, XTEND_FUNCTION__NAME, function.getModifiers().indexOf("override"), OBSOLETE_OVERRIDE);
+				}
 			}
 		}
 	}
@@ -878,7 +943,7 @@ public class XtendJavaValidator extends XbaseWithAnnotationsJavaValidator {
 		return getDeclaratorName(resolved.getDeclaration());
 	}
 	
-	protected void createExceptionMismatchError(IResolvedOperation operation, XtendFunction function,
+	protected void createExceptionMismatchError(IResolvedOperation operation, EObject sourceElement,
 			List<IResolvedOperation> exceptionMismatch) {
 		List<LightweightTypeReference> exceptions = operation.getIllegallyDeclaredExceptions();
 		StringBuilder message = new StringBuilder(100);
@@ -914,15 +979,11 @@ public class XtendJavaValidator extends XbaseWithAnnotationsJavaValidator {
 			message.append('.');
 			message.append(exceptionMismatch.get(i).getSimpleSignature());
 		}
-		error(message.toString(), function, XTEND_EXECUTABLE__EXCEPTIONS, INCOMPATIBLE_THROWS_CLAUSE);
+		error(message.toString(), sourceElement, exceptionsFeature(sourceElement), INCOMPATIBLE_THROWS_CLAUSE);
 	}
 
-	/* @Nullable */
-	protected XtendFunction findXtendFunction(IResolvedOperation operation) {
-		EObject sourceElement = associations.getPrimarySourceElement(operation.getDeclaration());
-		if (sourceElement instanceof XtendFunction)
-			return (XtendFunction) sourceElement;
-		return null;
+	protected EObject findPrimarySourceElement(IResolvedOperation operation) {
+		return associations.getPrimarySourceElement(operation.getDeclaration());
 	}
 	
 	protected boolean isMorePrivateThan(JvmVisibility o1, JvmVisibility o2) {
@@ -974,10 +1035,10 @@ public class XtendJavaValidator extends XbaseWithAnnotationsJavaValidator {
 						if (expression instanceof XBlockExpression) {
 							List<XExpression> expressions = ((XBlockExpression) expression).getExpressions();
 							if(expressions.isEmpty() || !isDelegatConstructorCall(expressions.get(0))) {
-								XtendConstructor xtendConstructor = associations.getXtendConstructor(constructor);
+								EObject source = associations.getPrimarySourceElement(constructor);
 								error("No default constructor in super type " + superType.getSimpleName() 
 										+ ". Another constructor must be invoked explicitly.",
-										xtendConstructor, null, MUST_INVOKE_SUPER_CONSTRUCTOR);
+										source, null, MUST_INVOKE_SUPER_CONSTRUCTOR);
 							}
 						}
 					}
@@ -1419,7 +1480,7 @@ public class XtendJavaValidator extends XbaseWithAnnotationsJavaValidator {
 		// java type with the same name. Also this then belongs to Xbase and should be defined on JvmDeclaredType
 		Set<String> names = newLinkedHashSet();
 		for (XtendTypeDeclaration clazz : file.getXtendTypes()) {	
-			if (!names.add(clazz.getName()))
+			if (clazz.getName() != null && !names.add(clazz.getName()))
 				error("The type "+clazz.getName()+" is already defined.", clazz, XtendPackage.Literals.XTEND_TYPE_DECLARATION__NAME, -1, IssueCodes.DUPLICATE_TYPE_NAME);
 		}
 	}
@@ -1478,7 +1539,7 @@ public class XtendJavaValidator extends XbaseWithAnnotationsJavaValidator {
 	protected String getDeclaratorName(JvmFeature feature) {
 		JvmDeclaredType declarator = feature.getDeclaringType();
 		if (declarator.isLocal()) {
-			return "new " + declarator.getSuperTypes().get(0).getType().getSimpleName()+ "(){}";
+			return "new " + Iterables.getLast(declarator.getSuperTypes()).getType().getSimpleName()+ "(){}";
 		} else {
 			return declarator.getSimpleName();
 		}
@@ -1540,7 +1601,7 @@ public class XtendJavaValidator extends XbaseWithAnnotationsJavaValidator {
 			return;
 		}
 		ITypeReferenceOwner owner = new StandardTypeReferenceOwner(getServices(), context);
-		LightweightTypeReference throwableReference = new OwnedConverter(owner).toLightweightReference(throwableType);
+		LightweightTypeReference throwableReference = owner.toLightweightTypeReference(throwableType);
 		for(int i = 0; i < exceptions.size(); i++) {
 			JvmTypeReference exception = exceptions.get(i);
 			// throwables may not carry generics thus the raw comparison is sufficient
@@ -1635,6 +1696,8 @@ public class XtendJavaValidator extends XbaseWithAnnotationsJavaValidator {
 	@Check
 	public void checkFinalFieldInitialization(XtendInterface xtendInterface) {
 		JvmGenericType inferredType = associations.getInferredType(xtendInterface);
+		if (inferredType == null)
+			return;
 		super.checkFinalFieldInitialization(inferredType);
 	}
 	
@@ -1671,12 +1734,12 @@ public class XtendJavaValidator extends XbaseWithAnnotationsJavaValidator {
 	
 	@Override
 	protected void reportUninitializedField(JvmField field, JvmConstructor constructor) {
-		XtendConstructor xtendConstructor = associations.getXtendConstructor(constructor);
-		if (xtendConstructor != null) {
+		EObject sourceElement = associations.getPrimarySourceElement(constructor);
+		if (sourceElement != null) {
 			if (associations.getXtendField(field) != null) {
-				error("The blank final field " + field.getSimpleName() + " may not have been initialized.", xtendConstructor, null, FIELD_NOT_INITIALIZED);
+				error("The blank final field " + field.getSimpleName() + " may not have been initialized.", sourceElement, null, FIELD_NOT_INITIALIZED);
 			} else {
-				error("The blank final derived field " + field.getSimpleName() + " may not have been initialized.", xtendConstructor, null, FIELD_NOT_INITIALIZED);
+				error("The blank final derived field " + field.getSimpleName() + " may not have been initialized.", sourceElement, null, FIELD_NOT_INITIALIZED);
 			}
 		}
 	}
