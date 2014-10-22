@@ -4,11 +4,13 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 import org.eclipse.emf.common.util.EList;
 import org.eclipse.emf.ecore.EObject;
 import org.eclipse.emf.ecore.EStructuralFeature;
 import org.eclipse.emf.ecore.util.EObjectContainmentEList;
+import org.eclipse.xtend.core.jvmmodel.IXtendJvmAssociations;
 import org.eclipse.xtend.core.xtend.XtendClass;
 import org.eclipse.xtend.core.xtend.XtendFunction;
 import org.eclipse.xtend.core.xtend.XtendMember;
@@ -28,21 +30,38 @@ import org.eclipse.xtext.xbase.XClosure;
 import org.eclipse.xtext.xbase.XExpression;
 import org.eclipse.xtext.xbase.XListLiteral;
 import org.eclipse.xtext.xbase.XStringLiteral;
+import org.eclipse.xtext.xbase.annotations.xAnnotations.XAnnotation;
 
+import edu.kit.ipd.sdq.xtend2m.annotations.ModelIn;
+import edu.kit.ipd.sdq.xtend2m.annotations.ModelOut;
+import edu.kit.ipd.sdq.xtend2m.annotations.Strict;
+import edu.kit.ipd.sdq.xtend2m.annotations.Transformation;
+import edu.kit.ipd.sdq.xtend2m.annotations.TransformationInterface;
 import edu.kit.ipd.sdq.xtend2m.api.StarImportChecker;
 
 public class ModelValidationHelper {
-	private final String FQN_TRANSFORMATION_INTERFACE = "edu.kit.ipd.sdq.xtend2m.annotations.TransformationInterface";
-	private final String FQN_MODEL_IN = "edu.kit.ipd.sdq.xtend2m.annotations.ModelIn";
-	private final String FQN_MODEL_OUT = "edu.kit.ipd.sdq.xtend2m.annotations.ModelOut";
-	private final String FQN_STRICT_MODE = "edu.kit.ipd.sdq.xtend2m.annotations.Strict";
-	private final String FQN_EOBJECT = "org.eclipse.emf.ecore.EObject";
+	private final String FQN_TRANSFORMATION_INTERFACE = TransformationInterface.class.getName();
+	private final String FQN_TRANSFORMATION = Transformation.class.getName();
+	private final String FQN_MODEL_IN = ModelIn.class.getName();
+	private final String FQN_MODEL_OUT = ModelOut.class.getName();
+	private final String FQN_STRICT_MODE = Strict.class.getName();
+	private final String FQN_EOBJECT = EObject.class.getName();
 
 	public List<String> errorMessages = new ArrayList<String>();
 	public List<EObject> errorObjects  = new ArrayList<EObject>();
 	public boolean strict = false;
 
 	private boolean debug = false;
+	
+	// XExpressions that have already been visited
+	private static Set<XExpression> checkedExpressions = new HashSet<XExpression>();
+	
+	// for travelling up in the hierarchy
+	private IXtendJvmAssociations associations;
+
+	public ModelValidationHelper(IXtendJvmAssociations associations) {
+		this.associations = associations;
+	}
 
 	public List<String> getErrorMessages() {
 		return errorMessages;
@@ -65,131 +84,151 @@ public class ModelValidationHelper {
 	}
 
 	public void checkClassModelInterfaceAdherance(XtendClass clazz) {
-		System.out.println("\n\n\n"); 
-		
-		checked.clear();
-
-		ArrayList<String> inputAllowed = new ArrayList<String>();
-		ArrayList<String> outputAllowed = new ArrayList<String>();
+		checkClassModelInterfaceAdherance(clazz, null, null, null);
+	}
+	
+	public void checkClassModelInterfaceAdherance(XtendClass clazz,
+			List<String> inputAllowedArgument, List<String> outputAllowedArgument,
+			EObject parentClass) {
+		checkedExpressions.clear();
 
 		EList<JvmTypeReference> interfaces = clazz.getImplements();
-		boolean checkClass = false;
-		for (JvmTypeReference iface : interfaces) {
-//			System.out.println("Interface:\n  " + iface + "\n\n");
-			JvmType typ = iface.getType();
-//			System.out.println("Type:\n  " + typ.getQualifiedName());
-			EObjectContainmentEList<JvmAnnotationReference> annotations =
-					(EObjectContainmentEList<JvmAnnotationReference>) typ.eGet(typ.eClass().getEStructuralFeature("annotations"));
 
-//			System.out.println("annotations:");
-			for (JvmAnnotationReference ann : annotations) {
-				String qualifiedName = ann.getAnnotation().getQualifiedName();
-				if (qualifiedName.equals(FQN_TRANSFORMATION_INTERFACE)) {
-					checkClass = true;
-				}
-				else if (qualifiedName.equals(FQN_STRICT_MODE)) {
-					strict = true;
-				}
-				else if (qualifiedName.equals(FQN_MODEL_IN)) {
-					for (JvmAnnotationValue val : ann.getValues()) {
-						if (val instanceof JvmCustomAnnotationValue) {
-							// We traverse the unparsed array directly, not as an array
-							for (Object value : ((JvmCustomAnnotationValue) val).getValues()) {
-								if (value instanceof XListLiteral) {
-									for (XExpression xexpr : ((XListLiteral) value).getElements()) {
-										if (xexpr instanceof XStringLiteral) {
-											String sValue = ((XStringLiteral) xexpr).getValue();
-											System.out.println("Adding input value: " + sValue);
-											inputAllowed.add(sValue);
-										}
-									}
-								}
-							}
-						}
-					}
-				}
-				else if (qualifiedName.equals(FQN_MODEL_OUT)) {
-					for (JvmAnnotationValue val : ann.getValues()) {
-						if (val instanceof JvmCustomAnnotationValue) {
-							// We traverse the unparsed array directly, not as an array
-							for (Object value : ((JvmCustomAnnotationValue) val).getValues()) {
-								if (value instanceof XListLiteral) {
-									for (XExpression xexpr : ((XListLiteral) value).getElements()) {
-										if (xexpr instanceof XStringLiteral) {
-											String sValue = ((XStringLiteral) xexpr).getValue();
-											System.out.println("Adding ouput value: " + sValue);
-											outputAllowed.add(sValue);
-										}
-									}
-								}
-							}
-						}
-					}
-				}
+		boolean checkClazz = false;
+		for (XAnnotation clazzAnnotation : clazz.getAnnotationInfo().getAnnotations())
+			if (clazzAnnotation.getAnnotationType().getIdentifier().equals(FQN_TRANSFORMATION)) {
+				checkClazz = true;
+				break;
 			}
+		
+		if (checkClazz || (parentClass != null)) {
+			// add to the allowed input for parent instances
+			List<String> inputAllowed =
+				(inputAllowedArgument == null)
+					? new ArrayList<String>()
+						: new ArrayList<String>(inputAllowedArgument);
+			List<String> outputAllowed =
+				(outputAllowedArgument == null)
+					? new ArrayList<String>()
+					: new ArrayList<String>(outputAllowedArgument);
 
-//			for (EStructuralFeature feat : typ.eClass().getEAllStructuralFeatures()) {
-//				
-//				Object val = typ.eGet(feat);
-////				System.out.println("Feature:\n-- " + feat + "\n== " + val);
-//			}
-		}
-
-		inputAllowed.addAll(outputAllowed);
-
-		if (checkClass) { 
+			for (JvmTypeReference iface : interfaces) {
+				JvmType typ = iface.getType();
+				traverseModelInOut(inputAllowed, outputAllowed, typ);
+			}
+	
+			inputAllowed.addAll(outputAllowed);
+	
 			for (XtendMember member : clazz.getMembers()) {
 				if (member instanceof XtendFunction) {
 					XtendFunction f = (XtendFunction) member;
 
-					for (EObject content : f.getExpression().eContents()) {
-						if (content instanceof XExpression)
-							checkSubFunction((XExpression) content, inputAllowed);
+					if (f.getExpression() != null)
+						for (EObject content : f.getExpression().eContents()) {
+							if (content instanceof XExpression)
+								checkSubFunction((XExpression) content, inputAllowed, parentClass);
+						}
+				}
+			}
+			
+			// additionally, check all methods in super types
+			// this is restricted to methods defined in Xtend classes
+			JvmTypeReference superType = clazz.getExtends();
+			if ((superType != null) && (superType.getType() instanceof JvmGenericType)) {
+				XtendClass extendedXtendClass = associations.getXtendClass((JvmGenericType) superType.getType());
+				checkClassModelInterfaceAdherance(extendedXtendClass, inputAllowed, outputAllowed, clazz.getExtends());
+			}
+		}
+	}
+
+	private void traverseModelInOut(List<String> inputAllowed,
+			List<String> outputAllowed, JvmType typ) {
+		EObjectContainmentEList<JvmAnnotationReference> annotations =
+				(EObjectContainmentEList<JvmAnnotationReference>) typ.eGet(typ.eClass().getEStructuralFeature("annotations"));
+
+		for (JvmAnnotationReference ann : annotations) {
+			String qualifiedName = ann.getAnnotation().getQualifiedName();
+			if (qualifiedName.equals(FQN_STRICT_MODE)) {
+				strict = true;
+			}
+			else if (qualifiedName.equals(FQN_MODEL_IN)) {
+				for (JvmAnnotationValue val : ann.getValues()) {
+					if (val instanceof JvmCustomAnnotationValue) {
+						// We traverse the unparsed array directly, not as an array
+						for (Object value : ((JvmCustomAnnotationValue) val).getValues()) {
+							if (value instanceof XListLiteral) {
+								for (XExpression xexpr : ((XListLiteral) value).getElements()) {
+									if (xexpr instanceof XStringLiteral) {
+										String sValue = ((XStringLiteral) xexpr).getValue();
+										System.out.println("Adding input value: " + sValue);
+										inputAllowed.add(sValue);
+									}
+								}
+							}
+						}
+					}
+				}
+			}
+			else if (qualifiedName.equals(FQN_MODEL_OUT)) {
+				for (JvmAnnotationValue val : ann.getValues()) {
+					if (val instanceof JvmCustomAnnotationValue) {
+						// We traverse the unparsed array directly, not as an array
+						for (Object value : ((JvmCustomAnnotationValue) val).getValues()) {
+							if (value instanceof XListLiteral) {
+								for (XExpression xexpr : ((XListLiteral) value).getElements()) {
+									if (xexpr instanceof XStringLiteral) {
+										String sValue = ((XStringLiteral) xexpr).getValue();
+										System.out.println("Adding ouput value: " + sValue);
+										outputAllowed.add(sValue);
+									}
+								}
+							}
+						}
 					}
 				}
 			}
 		}
 	}
 
-	private void checkSubFunctions(Collection<EObject> objs, List<String> inputAllowed) {
+	private void checkSubFunctions(Collection<EObject> objs, List<String> inputAllowed, EObject errorAnnotationTarget) {
 		for (EObject obj : objs)
 			if (obj instanceof XExpression)
-				checkSubFunction((XExpression) obj, inputAllowed);
+				checkSubFunction((XExpression) obj, inputAllowed, errorAnnotationTarget);
 	}
 
-	private void checkSubFunctionsX(Collection<XExpression> objs, List<String> inputAllowed) {
+	private void checkSubFunctionsX(Collection<XExpression> objs, List<String> inputAllowed, EObject errorAnnotationTarget) {
 		for (XExpression obj : objs)
-			checkSubFunction(obj, inputAllowed);
+			checkSubFunction(obj, inputAllowed, errorAnnotationTarget);
 	}
 
-	private static HashSet<XExpression> checked = new HashSet<XExpression>();
-
-	private void checkSubFunction(XExpression exp, List<String> inputAllowed) {
+	private void checkSubFunction(XExpression exp, List<String> inputAllowed, EObject errorAnnotationTarget) {
 		if (exp == null)
 			return;
-
-		if (checked.contains(exp))
+		
+		if (checkedExpressions.contains(exp))
 			return;
 
-		checked.add(exp);
+		checkedExpressions.add(exp);
 
 		for (EStructuralFeature f : exp.eClass().getEAllStructuralFeatures()) {
 			try {
 				Object feat = exp.eGet(f);
 				if (feat instanceof XExpression)
-					checkSubFunction((XExpression) feat, inputAllowed);
+					checkSubFunction((XExpression) feat, inputAllowed, errorAnnotationTarget);
 				if (feat instanceof JvmMember) {
 					JvmMember member = (JvmMember) feat;
 					if (illegalType(member.getDeclaringType(), inputAllowed)) {
 						error("Illegal model access to "
-								+ member.getDeclaringType().getQualifiedName(), exp);
+								+ member.getDeclaringType().getQualifiedName(),
+								(errorAnnotationTarget == null ? exp : errorAnnotationTarget));
 					}
 				}
 				if (feat instanceof JvmOperation) {
 					JvmOperation op = (JvmOperation) feat;
 					if (illegalType(op.getReturnType().getType(), inputAllowed)) {
 						error("Illegal model access to "
-								+ op.getReturnType().getQualifiedName(), exp);
+								+ op.getReturnType().getQualifiedName(),
+								(errorAnnotationTarget == null ? exp : errorAnnotationTarget));
 					}
 
 				}
@@ -201,25 +240,25 @@ public class ModelValidationHelper {
 		if (exp instanceof XAbstractFeatureCall) {
 			XAbstractFeatureCall concreteExp = (XAbstractFeatureCall) exp;
 			for (XExpression x : concreteExp.getActualArguments())
-				checkSubFunction(x, inputAllowed);
-			checkSubFunction(concreteExp.getActualReceiver(), inputAllowed);
+				checkSubFunction(x, inputAllowed, errorAnnotationTarget);
+			checkSubFunction(concreteExp.getActualReceiver(), inputAllowed, errorAnnotationTarget);
 		} else if (exp instanceof XAbstractWhileExpression) {
 			XAbstractWhileExpression concreteExp = (XAbstractWhileExpression) exp;
-			checkSubFunction(concreteExp.getPredicate(), inputAllowed);
-			checkSubFunction(concreteExp.getBody(), inputAllowed);
+			checkSubFunction(concreteExp.getPredicate(), inputAllowed, errorAnnotationTarget);
+			checkSubFunction(concreteExp.getBody(), inputAllowed, errorAnnotationTarget);
 		} else if (exp instanceof XBlockExpression) {
 			XBlockExpression concreteExp = (XBlockExpression) exp;
-			checkSubFunctionsX(concreteExp.getExpressions(), inputAllowed);
+			checkSubFunctionsX(concreteExp.getExpressions(), inputAllowed, errorAnnotationTarget);
 		} else if (exp instanceof XCastedExpression) {
 			XCastedExpression concreteExp = (XCastedExpression) exp;
 //			checkType(concreteExp.getType());
-			checkSubFunction(concreteExp.getTarget(), inputAllowed);
+			checkSubFunction(concreteExp.getTarget(), inputAllowed, errorAnnotationTarget);
 		} else if (exp instanceof XClosure) {
 			XClosure concreteExp = (XClosure) exp;
-			checkSubFunction(concreteExp.getExpression(), inputAllowed);
+			checkSubFunction(concreteExp.getExpression(), inputAllowed, errorAnnotationTarget);
 		}
 
-		checkSubFunctions(exp.eContents(), inputAllowed);
+		checkSubFunctions(exp.eContents(), inputAllowed, errorAnnotationTarget);
 	}
 
 	private boolean illegalType(JvmType type, List<String> inputAllowed) {
@@ -233,9 +272,6 @@ public class ModelValidationHelper {
 		if (debug)
 			System.out.println("Checking Type: " + type + ", allowed: " + inputAllowed);
 
-//		System.out.println("Checking Type:\n-- " + type);
-//		System.out.println("Is EObject descendant?: " + isEObjectSubclass(type));
-
 		if (!isEObjectSubclass(type)) {
 			debug = false;
 			return false;
@@ -244,7 +280,6 @@ public class ModelValidationHelper {
 		if (debug)
 			System.out.println("Found EObject Subclass: " + type);
 
-//		boolean result = !StarImportChecker.check(type.getQualifiedName(), inputAllowed.toArray(new String[0]));
 		boolean result = !new StarImportChecker().check(type.getQualifiedName(), inputAllowed.toArray(new String[0]));
 		System.out.println("Check-Result: " + result);
 		debug = false;
